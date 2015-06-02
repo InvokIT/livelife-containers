@@ -1,5 +1,9 @@
-FROM ubuntu:14.04
-MAINTAINER Reid Burke <me@reidburke.com>
+FROM ubuntu:14.04.2
+MAINTAINER LiveLife Streaming <livelifestreaming@gmail.com>
+
+ENV NGINX_VERSION=1.9.1 \
+    NGINX_RTMP_VERSION=1.1.7 \
+    LIBAV_VERSION=11.3
 
 RUN apt-get -q -y update \
     && apt-get -q -y install cron logrotate make build-essential libssl-dev \
@@ -16,27 +20,26 @@ RUN cd /root && curl -L -O ftp://ftp.videolan.org/pub/x264/snapshots/last_x264.t
     && mkdir x264 && tar xjf last_x264.tar.bz2 -C x264 --strip 1 && cd x264 \
     && ./configure --enable-static && make install
 
-RUN cd /root && curl -L -O https://libav.org/releases/libav-11.tar.gz \
-    && mkdir libav && tar xzf libav-11.tar.gz -C libav --strip 1 && cd libav \
+RUN cd /root && curl -L https://libav.org/releases/libav-${LIBAV_VERSION}.tar.gz > libav.tar.gz \
+    && mkdir libav && tar xzf libav.tar.gz -C libav --strip 1 && cd libav \
     && ./configure --enable-gpl --enable-nonfree \
         --enable-libfdk-aac --enable-libx264 \
     && make install
 
-RUN groupadd nginx
-RUN useradd -m -g nginx nginx
-RUN mkdir -p /var/log/nginx /var/cache/nginx
+RUN groupadd nginx && useradd -m -g nginx nginx
+RUN mkdir -p /var/log/nginx /var/cache/nginx && chown nginx:nginx /var/log/nginx
 
-RUN cd /root && curl -L https://github.com/arut/nginx-rtmp-module/archive/v1.1.6.tar.gz > nginx-rtmp.tgz \
+RUN cd /root && curl -L https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_VERSION}.tar.gz > nginx-rtmp.tgz \
     && mkdir nginx-rtmp && tar xzf nginx-rtmp.tgz -C nginx-rtmp --strip 1 
 
-RUN mkdir /www && cp /root/nginx-rtmp/stat.xsl /www/info.xsl && chown -R nginx:nginx /www
+RUN mkdir -p /www/hls /www/rec && cp /root/nginx-rtmp/stat.xsl /www/stat.xsl && chown -R nginx:nginx /www
 
 RUN cd /root \
-    && curl -L -O http://nginx.org/download/nginx-1.7.7.tar.gz \
-    && curl -L -O http://nginx.org/download/nginx-1.7.7.tar.gz.asc \
+    && curl -L http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz > nginx.tar.gz \
+    && curl -L http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz.asc > nginx.tar.gz.asc \
     && gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-key A1C052F8 \
-    && gpg nginx-1.7.7.tar.gz.asc \
-    && tar xzf nginx-1.7.7.tar.gz && cd nginx-1.7.7 \
+    && gpg nginx.tar.gz.asc \
+    && mkdir nginx && tar xzf nginx.tar.gz -C nginx --strip 1 && cd nginx \
     && ./configure \
         --prefix=/etc/nginx \
         --sbin-path=/usr/sbin/nginx \
@@ -65,25 +68,29 @@ RUN cd /root \
         --with-http_secure_link_module \
         --with-http_stub_status_module \
         --with-http_auth_request_module \
-        --with-mail \
-        --with-mail_ssl_module \
         --with-file-aio \
         --add-module=/root/nginx-rtmp \
         --with-ipv6 \
    && make install
 
+RUN rm -rf /root/*
+
 RUN ldconfig
 
-EXPOSE 80
-EXPOSE 1935
+EXPOSE 80 1935
 
-RUN mkdir -p /etc/nginx/templates
+#RUN mkdir -p /etc/nginx/templates
 
-ADD sbin/substitute-env-vars.sh /usr/sbin/substitute-env-vars.sh
-ADD sbin/render-templates.sh /usr/sbin/render-templates.sh
-ADD sbin/entrypoint.sh /usr/sbin/entrypoint.sh
+#ADD sbin/substitute-env-vars.sh /usr/sbin/substitute-env-vars.sh
+#ADD sbin/render-templates.sh /usr/sbin/render-templates.sh
+#ADD sbin/entrypoint.sh /usr/sbin/entrypoint.sh
 
-ADD templates/nginx.conf.tmpl /etc/nginx/templates/nginx.conf.tmpl
+#ADD templates/nginx.conf.tmpl /etc/nginx/templates/nginx.conf.tmpl
 
-ENTRYPOINT ["/usr/sbin/entrypoint.sh"]
-CMD ["/usr/sbin/nginx", "-c", "/etc/nginx/nginx.conf"]
+VOLUME /www/hls /www/rec
+
+COPY nginx.conf hls-relay.sh /etc/nginx/
+RUN chmod +x /etc/nginx/hls-relay.sh
+
+ENTRYPOINT ["/usr/sbin/nginx"]
+#CMD ["-c", "/etc/nginx/nginx.conf"]

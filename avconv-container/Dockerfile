@@ -1,23 +1,20 @@
-FROM ubuntu:14.04.2
+FROM livelife/base:latest
 MAINTAINER LiveLife Streaming <livelifestreaming@gmail.com>
 
-ENV NGINX_VERSION=1.9.1 \
-    NGINX_RTMP_VERSION=1.1.7 \
-    LIBAV_VERSION=11.3
+ENV FDKAAC_VERSION=0.1.4
+ENV LIBAV_VERSION=11.3
 
 RUN apt-get -q -y update \
-    && apt-get -q -y install cron logrotate make build-essential libssl-dev \
-        zlib1g-dev libpcre3 libpcre3-dev curl pgp yasm \
-    && apt-get -q -y build-dep nginx \
+    && apt-get -q -y build-dep libav-tools \
     && apt-get -q -y clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
 RUN cd /root \
-    && curl -L http://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.3.tar.gz > fdk-aac.tgz \
+    && curl -L http://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-${FDKAAC_VERSION}.tar.gz > fdk-aac.tgz \
     && mkdir fdk-aac && tar xzf fdk-aac.tgz -C fdk-aac --strip 1 && cd fdk-aac \
     && ./configure && make install
 
-RUN cd /root && curl -L -O ftp://ftp.videolan.org/pub/x264/snapshots/last_x264.tar.bz2 \
-    && mkdir x264 && tar xjf last_x264.tar.bz2 -C x264 --strip 1 && cd x264 \
+RUN cd /root && curl -L -O ftp://ftp.videolan.org/pub/x264/snapshots/last_stable_x264.tar.bz2 \
+    && mkdir x264 && tar xjf last_stable_x264.tar.bz2 -C x264 --strip 1 && cd x264 \
     && ./configure --enable-static && make install
 
 RUN cd /root && curl -L https://libav.org/releases/libav-${LIBAV_VERSION}.tar.gz > libav.tar.gz \
@@ -26,71 +23,6 @@ RUN cd /root && curl -L https://libav.org/releases/libav-${LIBAV_VERSION}.tar.gz
         --enable-libfdk-aac --enable-libx264 \
     && make install
 
-RUN groupadd nginx && useradd -m -g nginx nginx
-RUN mkdir -p /var/log/nginx /var/cache/nginx && chown nginx:nginx /var/log/nginx
-
-RUN cd /root && curl -L https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_VERSION}.tar.gz > nginx-rtmp.tgz \
-    && mkdir nginx-rtmp && tar xzf nginx-rtmp.tgz -C nginx-rtmp --strip 1 
-
-RUN mkdir -p /www/hls /www/rec && cp /root/nginx-rtmp/stat.xsl /www/stat.xsl && chown -R nginx:nginx /www
-
-RUN cd /root \
-    && curl -L http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz > nginx.tar.gz \
-    && curl -L http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz.asc > nginx.tar.gz.asc \
-    && gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-key A1C052F8 \
-    && gpg nginx.tar.gz.asc \
-    && mkdir nginx && tar xzf nginx.tar.gz -C nginx --strip 1 && cd nginx \
-    && ./configure \
-        --prefix=/etc/nginx \
-        --sbin-path=/usr/sbin/nginx \
-        --conf-path=/etc/nginx/nginx.conf \
-        --error-log-path=/var/log/nginx/error.log \
-        --http-log-path=/var/log/nginx/access.log \
-        --pid-path=/var/run/nginx.pid \
-        --lock-path=/var/run/nginx.lock \
-        --http-client-body-temp-path=/var/cache/nginx/client_temp \
-        --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
-        --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
-        --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
-        --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
-        --user=nginx \
-        --group=nginx \
-        --with-http_ssl_module \
-        --with-http_realip_module \
-        --with-http_addition_module \
-        --with-http_sub_module \
-        --with-http_dav_module \
-        --with-http_flv_module \
-        --with-http_mp4_module \
-        --with-http_gunzip_module \
-        --with-http_gzip_static_module \
-        --with-http_random_index_module \
-        --with-http_secure_link_module \
-        --with-http_stub_status_module \
-        --with-http_auth_request_module \
-        --with-file-aio \
-        --add-module=/root/nginx-rtmp \
-        --with-ipv6 \
-   && make install
-
 RUN rm -rf /root/*
 
 RUN ldconfig
-
-EXPOSE 80 1935
-
-#RUN mkdir -p /etc/nginx/templates
-
-#ADD sbin/substitute-env-vars.sh /usr/sbin/substitute-env-vars.sh
-#ADD sbin/render-templates.sh /usr/sbin/render-templates.sh
-#ADD sbin/entrypoint.sh /usr/sbin/entrypoint.sh
-
-#ADD templates/nginx.conf.tmpl /etc/nginx/templates/nginx.conf.tmpl
-
-VOLUME /www/hls /www/rec
-
-COPY nginx.conf hls-relay.sh /etc/nginx/
-RUN chmod +x /etc/nginx/hls-relay.sh
-
-ENTRYPOINT ["/usr/sbin/nginx"]
-#CMD ["-c", "/etc/nginx/nginx.conf"]

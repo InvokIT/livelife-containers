@@ -62,7 +62,7 @@ RUN ldconfig
 
 EXPOSE 80 1935
 
-VOLUME /www/rec
+VOLUME /var/rec /var/hls /var/dash
 
 COPY nginx.conf /etc/nginx/
 

@@ -1,4 +1,4 @@
-FROM livelife/base:latest
+FROM qvazar/base:latest
 MAINTAINER LiveLife Streaming <livelifestreaming@gmail.com>
 
 ENV FDKAAC_VERSION=0.1.4

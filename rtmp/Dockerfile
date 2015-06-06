@@ -1,4 +1,4 @@
-FROM livelife/avconv:latest
+FROM qvazar/avconv:latest
 MAINTAINER LiveLife Streaming <livelifestreaming@gmail.com>
 
 ENV NGINX_VERSION=1.9.1 \

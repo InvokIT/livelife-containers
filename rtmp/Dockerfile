@@ -63,5 +63,7 @@ RUN ldconfig
 EXPOSE 80 1935
 
 COPY nginx.conf /etc/nginx/
+COPY entrypoint.sh /usr/sbin/
+RUN chmod +x /usr/sbin/entrypoint.sh
 
-ENTRYPOINT ["/usr/sbin/nginx"]
+ENTRYPOINT ["/usr/sbin/entrypoint.sh"]

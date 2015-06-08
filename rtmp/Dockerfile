@@ -15,7 +15,7 @@ RUN cd /root \
     && curl -L https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_VERSION}.tar.gz > nginx-rtmp.tgz \
     && mkdir nginx-rtmp && tar xzf nginx-rtmp.tgz -C nginx-rtmp --strip 1 
 
-RUN mkdir -p /www /var/data/rec /var/data/hls /var/data/dash && cp /root/nginx-rtmp/stat.xsl /www/stat.xsl && chown -R nginx:nginx /www
+RUN mkdir -p /www && cp /root/nginx-rtmp/stat.xsl /www/stat.xsl && chown -R nginx:nginx /www
 
 RUN cd /root \
     && curl -L http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz > nginx.tar.gz \
@@ -61,6 +61,9 @@ RUN rm -rf /root/*
 RUN ldconfig
 
 EXPOSE 80 1935
+
+RUN mkdir /shared
+VOLUME /shared
 
 COPY nginx.conf /etc/nginx/
 COPY entrypoint.sh /usr/sbin/

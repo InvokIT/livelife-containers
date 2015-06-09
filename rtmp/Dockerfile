@@ -1,10 +1,12 @@
-FROM qvazar/avconv:latest
+FROM qvazar/log-base-onbuild:latest
 MAINTAINER LiveLife Streaming <livelifestreaming@gmail.com>
 
 ENV NGINX_VERSION=1.9.1 \
     NGINX_RTMP_VERSION=1.1.7
 
 RUN apt-get -q -y update \
+    && apt-get -q -y install cron logrotate make build-essential libssl-dev \
+        zlib1g-dev libpcre3 libpcre3-dev curl pgp yasm \
     && apt-get -q -y build-dep nginx \
     && apt-get -q -y clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
@@ -66,7 +68,3 @@ RUN mkdir /shared
 VOLUME /shared
 
 COPY nginx.conf /etc/nginx/
-COPY entrypoint.sh /usr/sbin/
-RUN chmod +x /usr/sbin/entrypoint.sh
-
-ENTRYPOINT ["/usr/sbin/entrypoint.sh"]

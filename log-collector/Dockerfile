@@ -17,12 +17,12 @@ RUN sed -i "s/#\$ModLoad imudp/\$ModLoad imudp/" /etc/rsyslog.conf && \
 RUN sed -i "s/authpriv.none/authpriv.none,local6.none,local7.none/" /etc/rsyslog.d/50-default.conf
 
 COPY awslogs.conf /root/awslogs.conf
-RUN cd /root && python ./awslogs-agent-setup.py -n -r eu-west-1 -c /awslogs.conf
+RUN cd /root && python ./awslogs-agent-setup.py -n -r eu-west-1 -c ./awslogs.conf
 
 RUN pip install supervisor
 COPY supervisord.conf /usr/local/etc/supervisord.conf
 
-EXPOSE 514/tcp 514/udp
+EXPOSE 514
 
 COPY entrypoint.sh /usr/sbin/entrypoint.sh
 RUN chmod +x /usr/sbin/entrypoint.sh

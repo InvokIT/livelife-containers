@@ -4,7 +4,6 @@ set -e
 FDKAAC_VERSION=0.1.4
 LIBAV_VERSION=11.3
 
-
 apt-get -q -y update \
 apt-get -q -y build-dep libav-tools
 
@@ -18,7 +17,6 @@ mkdir fdk-aac && tar xzf fdk-aac.tgz -C fdk-aac --strip 1
 cd fdk-aac
 ./configure
 make install
-
 cd ..
 
 curl -L -O ftp://ftp.videolan.org/pub/x264/snapshots/last_stable_x264.tar.bz2
@@ -26,7 +24,6 @@ mkdir x264 && tar xjf last_stable_x264.tar.bz2 -C x264 --strip 1
 cd x264
 ./configure --enable-static
 make install
-
 cd ..
 
 curl -L https://libav.org/releases/libav-${LIBAV_VERSION}.tar.gz > libav.tar.gz

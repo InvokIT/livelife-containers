@@ -14,4 +14,4 @@ ONBUILD COPY package.json /usr/src/app/
 ONBUILD RUN npm install
 ONBUILD COPY . /usr/src/app
 
-ONBUILD ENTRYPOINT ["coffee", "app.coffee", "--nodejs"]
+ONBUILD ENTRYPOINT ["coffee", "main.coffee", "--nodejs"]

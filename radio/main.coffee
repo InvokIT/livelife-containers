@@ -15,6 +15,8 @@ net = require "net"
 log = require("./log").getLogger "server"
 RadioChannel = require "./radio-channel"
 
+log.debug "RadioChannel = #{JSON.stringify RadioChannel}"
+
 server = net.createServer (c) ->
 	log.info "client connected"
 

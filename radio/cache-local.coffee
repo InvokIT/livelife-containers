@@ -17,6 +17,9 @@ class Cache
 
 	set: (key, value, options) ->
 		log.trace "entering set { key: #{key}, value: #{value}, options: #{options} }"
+
+		options = JSON.parse options if typeof options is "string"
+		
 		@remove(key).then =>
 			new Promise (resolve, reject) =>
 				values[key] = value

@@ -96,10 +96,10 @@ class RadioChannel
 			@socket.end()
 
 		@msgbus.subscribe channel, onMessage
-		.then (=>)
+		.then ( => @socket.write { subscribe: channel } )
 		, (err) => 
 			log.error "handleSubscribe { channel: #{channel} }, error: #{err}"
-			@socket.end { error: err}
+			@socket.end { error: err }
 
 
 module.exports = RadioChannel

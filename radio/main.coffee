@@ -1,4 +1,4 @@
-port = process.env.PORT or 24910
+port = process.env.PORT or 2400
 environment = process.env.NODE_ENV or "production"
 
 Msgbus = 

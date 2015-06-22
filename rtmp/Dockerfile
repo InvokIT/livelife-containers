@@ -64,7 +64,7 @@ RUN ldconfig
 
 EXPOSE 80 1935
 
-RUN mkdir /shared
-VOLUME /shared
+RUN mkdir -p /recordings
+VOLUME /recordings
 
 COPY nginx.conf /etc/nginx/

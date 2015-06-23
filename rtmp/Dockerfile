@@ -1,4 +1,4 @@
-FROM qvazar/log-base-onbuild:latest
+FROM ubuntu:14.04
 MAINTAINER LiveLife Streaming <livelifestreaming@gmail.com>
 
 ENV NGINX_VERSION=1.9.1 \
@@ -64,7 +64,10 @@ RUN ldconfig
 
 EXPOSE 80 1935
 
-RUN mkdir -p /recordings
-VOLUME /recordings
-
 COPY nginx.conf /etc/nginx/
+COPY entrypoint.sh /usr/local/bin/
+
+ENV LOG_PATH_ACCESS=/var/log/nginx/access.log
+ENV LOG_PATH_ERROR=/var/log/nginx/error.log
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

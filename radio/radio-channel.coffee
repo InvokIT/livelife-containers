@@ -34,39 +34,6 @@ class RadioChannel
 		@[fnName](params)
 		return
 
-	handleCmdGet: (key) ->
-		log.trace "entering handleGet { key: #{key} }"
-
-		@cache.get key
-		.then (value) =>
-			#value = JSON.stringify value if typeof value is "object"
-			log.debug "handleGet { key: #{key}, value: #{value} }"
-			res = { key: key, value: value }
-			@socket.end res
-		, (err) =>
-			log.error "handleGet { key: #{key} }, error: #{err}"
-			@socket.end { error: err.message }
-
-	handleCmdSet: (params) ->
-		log.trace "entering handleSet { params: #{params} }"
-
-		{ key, value, ttl } = params
-
-		@cache.set key, value, ttl: ttl
-		.then (=> @socket.end { key: key, value: value } )
-		, (err) =>
-			log.error "handleSet { key: #{key}, value: #{value}, options: #{options} }, error: #{err}"
-			@socket.end { error: err.message }
-
-	handleCmdRemove: (key) ->
-		log.trace "entering handleRemove { key: #{key} }"
-
-		@cache.remove key
-		.then (=> @socket.end { key: key, value: null })
-		, (err) =>
-			log.error "handleRemove { key: #{key} }, error: #{err}"
-			@socket.end { error: err.message }
-
 	handleCmdPublish: (params) ->
 		log.trace "entering handlePublish { params: #{params} }"
 

@@ -6,11 +6,6 @@ Msgbus =
 		when "debug" then require "./msgbus-local"
 		when "production" then require "./msgbus-redis"
 
-Cache =
-	switch environment
-		when "debug" then require "./cache-local"
-		when "production" then require "./cache-redis"
-
 net = require "net"
 log = require("./log").getLogger "server"
 RadioChannel = require "./radio-channel"

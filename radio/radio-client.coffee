@@ -5,17 +5,6 @@ class RadioClient
 	constructor: (@host, @port) ->
 		@subscriptions = {}
 
-	get: (key) ->
-		sendRequest { get: key }
-		.then (res) ->
-			res.value
-
-	set: (key, value, ttl) ->
-		sendRequest { set: { key, value, ttl } }
-
-	remove: (key) ->
-		sendRequest { remove: key }
-
 	publish: (channel, message) ->
 		sendRequest { publish: { channel, message } }
 

@@ -1,16 +1,10 @@
 #!/bin/bash
 set -e
 
-FORMAT=$1
-RTMPSERVER=$2
-STREAM=$3
-DEST_PREFIX=$4
+mkdir -p $(dirname $LOG_PATH) $HLS_OUT
 
-case "$FORMAT" in
-	hls )
-		exec /usr/local/bin/transcode-hls.sh $RTMPSERVER $STREAM $DEST_PREFIX
-		;;
-	dash ) # Not implemented
-		exec /usr/local/bin/transcode-dash.sh $RTMPSERVER $STREAM $DEST_PREFIX
-		;;
-esac
+RTMPSERVER=$1
+STREAM=$2
+DEST_PREFIX=$3
+
+exec /usr/local/bin/hls-transcode.sh $RTMPSERVER $STREAM $DEST_PREFIX

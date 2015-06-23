@@ -1,4 +1,11 @@
 #!/bin/bash
+# CLI arguments:
+# 1 Address to the origin RTMP server (rtmp://[x.x.x.x]/ingest)
+# 2 The stream name (rtmp://x.x.x.x/ingest/[stream name])
+# 3 The destination file prefix
+# Uses the following environment variables:
+# HLS_OUT Where to store HLS output files
+# LOG_PATH where to log to
 set -e
 
 RTMPSERVER=$1

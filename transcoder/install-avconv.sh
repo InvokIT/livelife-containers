@@ -32,3 +32,5 @@ mkdir libav && tar xzf libav.tar.gz -C libav --strip 1
 cd libav
 ./configure --enable-gpl --enable-nonfree --enable-libfdk-aac --enable-libx264
 make install
+
+ldconfig

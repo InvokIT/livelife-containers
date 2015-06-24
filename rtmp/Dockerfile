@@ -67,6 +67,8 @@ EXPOSE 80 1935
 COPY nginx.conf /etc/nginx/
 COPY entrypoint.sh /usr/local/bin/
 
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 ENV LOG_PATH_ACCESS=/var/log/nginx/access.log
 ENV LOG_PATH_ERROR=/var/log/nginx/error.log
 

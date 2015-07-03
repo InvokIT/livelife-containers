@@ -11,15 +11,17 @@ class Cache
 	get: (key) ->
 		log.trace "entering get { key: #{key} }"
 		new Promise (resolve, reject) =>
-			value = values[key]
-			log.info "get { key: #{key}, value: #{value} }"
-			resolve value
+			if key of values
+				value = values[key]
+				log.info "get { key: #{key}, value: #{value} }"
+				resolve value
+			else
+				log.warn "Key does not exist: '#{key}'."
+				reject new Error "Key does not exist."
 
 	set: (key, value, options) ->
 		log.trace "entering set { key: #{key}, value: #{value}, options: #{options} }"
 
-		options = JSON.parse options if typeof options is "string"
-		
 		@remove(key).then =>
 			new Promise (resolve, reject) =>
 				values[key] = value

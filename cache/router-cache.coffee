@@ -9,7 +9,12 @@ module.exports = (cache) ->
 	.put (req, res) ->
 		key = req.params.key
 		value = req.body
-		ttl = parseInt req.header "X-TTL"
+
+		try
+			ttl = parseInt ttlHeader if (ttlHeader = req.header "X-TTL")?
+		catch error
+			log.warn "Invalid X-TTL header value: '#{ttl}'. Error: #{error.message}"
+			res.status(422).send error.message
 
 		cache.set key, value, { ttl }
 		.then ->

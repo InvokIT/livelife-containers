@@ -5,18 +5,24 @@ logger = require("./log").getLogger "rtmp"
 
 onIngestPublish = (req, res) ->
 	logger.trace "onIngestPublish"
-	channelName = req.body.name
-	streamKey = req.body.key
 
-	# TODO Check if channel exists and the stream key is valid
-	valid = true
-	res.sendStatus if valid then 200 else 403
+	onIngestUpdate req, res
 
 onIngestPublishDone = (req, res) ->
 	logger.trace "onIngestPublishDone"
 
 onIngestUpdate = (req, res) ->
+	channelName = req.body.name
+	streamKey = req.body.key
 
+	# TODO Check if channel exists and the stream key is valid
+	channelExists = true
+	streamKeyIsValid = true
+
+	if channelExists and streamKeyIsValid
+		res.sendStatus 200
+	else
+		res.sendStatus 403
 
 router.post "/publish", (req, res) ->
 	logger.trace "/publish"

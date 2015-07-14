@@ -12,6 +12,7 @@ onIngestPublishDone = (req, res) ->
 	logger.trace "onIngestPublishDone"
 
 onIngestUpdate = (req, res) ->
+	logger.trace "onIngestUpdate"
 	channelName = req.body.name
 	streamKey = req.body.key
 

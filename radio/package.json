@@ -9,7 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.13.2",
+    "express": "^4.13.1",
     "log4js": "^0.6.25",
-    "promise": "^7.0.3"
+    "promise": "^7.0.3",
+    "request": "^2.58.0"
   }
 }

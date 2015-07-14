@@ -1,24 +1,23 @@
-port = process.env.PORT or 2400
+express = require "express"
+bodyParser = require "body-parser"
+
+port = process.env.PORT or 80
 environment = process.env.NODE_ENV or "production"
 
-Msgbus = 
+Radio = 
 	switch environment
-		when "debug" then require "./msgbus-local"
-		when "production" then require "./msgbus-redis"
+		when "debug" then require "./radio-local"
+		when "production" then require "./radio-redis"
 
-net = require "net"
-log = require("./log").getLogger "server"
-RadioChannel = require "./radio-channel"
+log = require("./log").getLogger "radio-server"
 
-log.debug "RadioChannel = #{JSON.stringify RadioChannel}"
+app = express()
 
-server = net.createServer (c) ->
-	log.info "client connected"
+app.use bodyParser.urlencoded extended: true
+app.use bodyParser.json()
 
-	radioChannel = new RadioChannel(c, new Msgbus, new Cache)
+app.get "/ping", (req, res) -> res.sendStatus 200
 
-	c.on "end", ->
-		log.info "client disconnected"
+app.use "", require("./router-radio")(new Radio)
 
-server.listen port, -> log.info "listening on port #{port}"
-
+app.listen port, -> log.info "Listening on port #{port}"

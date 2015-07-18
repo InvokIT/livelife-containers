@@ -1,5 +1,5 @@
 {
-  "name": "radio",
+  "name": "overlord",
   "version": "1.0.0",
   "description": "",
   "main": "main.coffee",
@@ -7,12 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.13.2",
-    "express": "^4.13.1",
+    "body-parser": "^1.13.1",
+    "express": "^4.12.4",
     "log4js": "^0.6.25",
-    "promise": "^7.0.3",
-    "request": "^2.58.0"
+    "promise": "^7.0.3"
   }
 }

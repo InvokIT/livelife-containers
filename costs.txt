@@ -1,0 +1,3 @@
+http://calculator.s3.amazonaws.com/index.html#r=DUB&key=calc-58E04830-2D84-45F2-9F75-8F5C0D873355
+
+https://cloud.google.com/products/calculator/#id=359e5602-aabd-4bb4-bf7f-a7fa651fba79

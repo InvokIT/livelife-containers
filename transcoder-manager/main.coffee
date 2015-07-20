@@ -12,7 +12,6 @@ app.use bodyParser.json()
 
 app.get "/ping", (req, res) -> res.sendStatus 200
 
-#app.use "", require("./router")
-app.use "/rtmp", require("./rtmp-router")
+app.use "", require("./router")
 
 app.listen port, -> log.info "Listening on port #{port}"

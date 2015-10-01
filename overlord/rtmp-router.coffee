@@ -22,6 +22,7 @@ onIngestUpdate = (req, res) ->
 
 	if channelExists and streamKeyIsValid
 		res.sendStatus 200
+		# TODO Set channel as live
 	else
 		res.sendStatus 403
 

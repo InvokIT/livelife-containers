@@ -10,14 +10,14 @@ set -e
 
 RTMPSERVER=$1
 STREAM=$2
-DEST_PATH=$HLS_OUT
+DEST_PATH=/sink/hls
 DEST_PREFIX=$3
 AUDIO_BASEOPTIONS="-c:a libfdk_aac"
 VIDEO_BASEOPTIONS="-c:v libx264 -preset ultrafast -profile:v baseline -g 40 -r 20"
 ENCODER_OPTIONS="-hls_time 2 -hls_list_size 10"
 FILENAME=${DEST_PREFIX}_${STREAM}
 
-sed s/{{FILENAME}}/${FILENAME}/ /etc/hls-index-template.m3u8 > ${DEST_PATH}/${FILENAME}.m3u8
+sed s/{{STREAMNAME}}/${FILENAME}/ /etc/hls-index-template.m3u8 > ${DEST_PATH}/${FILENAME}.m3u8
 
 exec /usr/local/bin/avconv -loglevel warning -i ${RTMPSERVER}/${STREAM} \
 $AUDIO_BASEOPTIONS -b:a 128k $VIDEO_BASEOPTIONS -b:v 512k $ENCODER_OPTIONS -f hls ${DEST_PATH}/${FILENAME}_high.m3u8 \

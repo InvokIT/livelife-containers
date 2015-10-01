@@ -15,11 +15,12 @@ module.exports = (cache) ->
 		catch error
 			log.warn "Invalid X-TTL header value: '#{ttl}'. Error: #{error.message}"
 			res.status(422).send error.message
+			return
 
 		cache.set key, value, { ttl }
 		.then ->
 			log.info "set success { key: #{key}, value: #{value}, ttl: #{ttl} }"
-			res.sendStatus 204
+			res.sendStatus 201
 		, (err) ->
 			log.warn "set error { key: #{key}, value: #{value}, ttl: #{ttl} }, #{err.message}"
 			res.status(500).send err.message
@@ -45,7 +46,7 @@ module.exports = (cache) ->
 		cache.remove key
 		.then ->
 			log.info "delete success { key: #{key} }"
-			res.sendStatus 204
+			res.sendStatus 205
 		, (err) ->
 			log.warn "delete error { key #{key} }, #{err.message}"
 			res.status(500).send err.message

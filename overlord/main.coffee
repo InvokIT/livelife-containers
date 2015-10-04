@@ -1,5 +1,6 @@
 express = require "express"
 bodyParser = require "body-parser"
+log = require("./log").getLogger "main"
 
 port = process.env.PORT or 80
 environment = process.env.NODE_ENV or "production"

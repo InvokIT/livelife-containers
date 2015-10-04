@@ -1,0 +1,11 @@
+[Unit]
+Description=Announce RTMP Server
+BindsTo=rtmp@%i.service
+After=rtmp@%i.service
+
+[Service]
+ExecStart=/bin/sh -c "while true; do etcdctl set /services/rtmp/rtmp@%i '{ \"host\": \"%H\", \"port\": 1935 }' --ttl 30;sleep 20;done"
+ExecStop=/usr/bin/etcdctl rm /services/rtmp/rtmp@%i
+
+[X-Fleet]
+MachineOf=rtmp@%i.service

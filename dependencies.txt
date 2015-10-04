@@ -1,0 +1,8 @@
+rtmp
+
+transcoder - transcodes streams from rtmp to hls
+- heartbeat - sets a value with ttl 5 in cache while transcoder is running
+- --volumes-from transcoder-sink
+
+transcoder-sink-server
+- --volumes-from transcoder-sink

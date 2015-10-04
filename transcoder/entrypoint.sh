@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-mkdir -p $(dirname $LOG_PATH) $HLS_OUT
+mkdir -p $(dirname $LOG_PATH) /sink/hls
 
 RTMPSERVER=$1
 STREAM=$2

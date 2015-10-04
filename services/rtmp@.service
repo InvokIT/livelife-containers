@@ -1,0 +1,15 @@
+[Unit]
+Description=RTMP Server
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill rtmp
+ExecStartPre=-/usr/bin/docker rm rtmp
+ExecStartPre=/usr/bin/docker pull $(etcdctl get /services/docker-registry)/rtmp
+ExecStart=/usr/bin/docker run --name rtmp -p 1935:1935 $(etcdctl get /services/docker-registry)/rtmp
+ExecStop=/usr/bin/docker stop rtmp
+
+[X-Fleet]
+Conflicts=rtmp@*.service

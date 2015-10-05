@@ -1,7 +1,7 @@
 [Unit]
 Description=RTMP Server
-After=docker.service
-Requires=docker.service
+After=docker.service docker-registry.service
+Requires=docker.service docker-registry.service
 
 [Service]
 TimeoutStartSec=0

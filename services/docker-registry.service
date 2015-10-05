@@ -9,6 +9,7 @@ ExecStartPre=-/usr/bin/docker kill docker-registry
 ExecStartPre=-/usr/bin/docker rm docker-registry
 ExecStartPre=/usr/bin/docker pull registry:2
 ExecStart=/usr/bin/docker run --name docker-registry -v /shared/docker-registry:/var/lib/registry -p 5000:5000 registry:2
+ExecStartPost=/usr/bin/chmod 0700 /services/bitbucket_key
 ExecStartPost=/usr/bin/ssh-agent bash -c "ssh-add /services/bitbucket_key; git clone git@bitbucket.org:Qvazar/livelife-containers.git /tmp/livelife-containers"
 ExecStartPost=/usr/bin/bash /tmp/livelife-containers/build-to-registry.sh %H:5000
 ExecStop=/usr/bin/docker stop docker-registry

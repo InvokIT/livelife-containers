@@ -11,8 +11,8 @@ UNITS=("rtmp")
 
 for i in "${UNITS[@]}"
 do
-	exec docker build -t ${REGISTRY}/${i} ${DIR}/${i}/
-	exec docker push ${REGISTRY}/${i}
+	docker build -t ${REGISTRY}/${i} ${DIR}/${i}/
+	docker push ${REGISTRY}/${i}
 done
 
 

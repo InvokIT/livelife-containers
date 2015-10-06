@@ -5,11 +5,11 @@ Requires=docker.service docker-registry.service
 
 [Service]
 TimeoutStartSec=0
-ExecStartPre=-/usr/bin/docker kill rtmp
-ExecStartPre=-/usr/bin/docker rm rtmp
+ExecStartPre=-/usr/bin/docker kill $(etcdctl get /services/docker-registry)/rtmp
+ExecStartPre=-/usr/bin/docker rm $(etcdctl get /services/docker-registry)/rtmp
 ExecStartPre=/usr/bin/docker pull $(etcdctl get /services/docker-registry)/rtmp
 ExecStart=/usr/bin/docker run --name rtmp -p 1935:1935 $(etcdctl get /services/docker-registry)/rtmp
-ExecStop=/usr/bin/docker stop rtmp
+ExecStop=/usr/bin/docker stop $(etcdctl get /services/docker-registry)/rtmp
 
 [X-Fleet]
 Conflicts=rtmp@*.service

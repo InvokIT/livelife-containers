@@ -7,12 +7,14 @@ REGISTRY="$1"
 
 #docker run -d --name docker-registry -v ${DIR}/docker-registry/volume:/var/lib/registry -p 5000:5000 registry:2
 
-UNITS=("rtmp" "rtmp-test")
+UNITS=("rtmp")
 
 for i in "${UNITS[@]}"
 do
+	echo Building image $i...
 	docker build -t ${REGISTRY}/${i} ${DIR}/${i}/
 	docker push ${REGISTRY}/${i}
+	echo Done building image $i
 done
 
 

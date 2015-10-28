@@ -8,8 +8,8 @@ EnvironmentFile=/etc/environment
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill rtmp-%i
 ExecStartPre=-/usr/bin/docker rm rtmp-%i
-ExecStartPre=/usr/bin/bash -c "/usr/bin/docker pull ${COREOS_PRIVATE_IPV4}:5000/rtmp"
-ExecStart=/usr/bin/bash -c "/usr/bin/docker run --name rtmp-%i -p ${COREOS_PRIVATE_IPV4}:1935:1935 ${COREOS_PRIVATE_IPV4}:5000/rtmp"
+ExecStartPre=/usr/bin/docker pull ${COREOS_PRIVATE_IPV4}:5000/rtmp
+ExecStart=/usr/bin/docker run --name rtmp-%i -p ${COREOS_PRIVATE_IPV4}:1935:1935 ${COREOS_PRIVATE_IPV4}:5000/rtmp
 ExecStop=/usr/bin/docker stop rtmp-%i
 
 [X-Fleet]

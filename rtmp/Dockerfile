@@ -62,7 +62,7 @@ RUN rm -rf /root/*
 
 RUN ldconfig
 
-EXPOSE 80 1935
+EXPOSE 1935
 
 COPY nginx.conf /etc/nginx/
 COPY entrypoint.sh /usr/local/bin/

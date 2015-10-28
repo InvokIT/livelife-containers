@@ -1,7 +1,7 @@
 [Unit]
 Description=rtmp
-After=docker.service docker-registry.service docker-discover.service docker-register.service
-Requires=docker.service docker-registry.service docker-discover.service docker-register.service
+After=docker.service
+Requires=docker.service
 
 [Service]
 EnvironmentFile=/etc/environment

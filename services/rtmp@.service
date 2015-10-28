@@ -8,7 +8,7 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill rtmp-%i
 ExecStartPre=-/usr/bin/docker rm rtmp-%i
 ExecStartPre=/usr/bin/bash -c "/usr/bin/docker pull $(hostname -i | awk '{print $1}'):5000/rtmp"
-ExecStart=/usr/bin/bash -c "/usr/bin/docker run --name rtmp-%i -p 1935:1935 $(hostname -i | awk '{print $1}'):5000/rtmp"
+ExecStart=/usr/bin/bash -c "/usr/bin/docker run --name rtmp-%i -p $(hostname -i | awk '{print $1}'):1935:1935 $(hostname -i | awk '{print $1}'):5000/rtmp"
 ExecStop=/usr/bin/docker stop rtmp-%i
 
 [X-Fleet]

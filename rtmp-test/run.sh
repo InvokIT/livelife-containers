@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+HOST_IP=$( grep COREOS_PRIVATE_IPV4 /etc/environment | sed 's/COREOS_PRIVATE_IPV4=//')
 
-docker build -t qvazar/transcoder ${DIR} && \
-docker run --rm --volumes-from transcoder-sink qvazar/transcoder "$@"
+exec docker run -e HOST_IP=$HOST_IP $HOST_IP:5000/rtmp-test

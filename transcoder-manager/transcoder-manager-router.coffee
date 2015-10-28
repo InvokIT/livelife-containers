@@ -25,4 +25,8 @@ router.post "/:streamName/hls/start", (req, res) ->
 	else
 		startTranscoder(streamName).then -> res.sendStatus(201), -> res.sendStatus(500)
 
+router.post "/:streamName/hls/stop", (req, res) ->
+	streamName = req.params.streamName
+	log.trace "#{streamName}/hls/start"	
+
 module.exports = router

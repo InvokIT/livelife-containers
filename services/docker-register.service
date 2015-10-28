@@ -8,7 +8,7 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill docker-register
 ExecStartPre=-/usr/bin/docker rm docker-register
 ExecStartPre=/usr/bin/docker pull jwilder/docker-register
-ExecStart=docker run --name docker-register -e HOST_IP=$(hostname --ip-address | awk '{print $1}') -e ETCD_HOST=$(hostname --ip-address | awk '{print $1}'):4001 -v /var/run/docker.sock:/var/run/docker.sock jwilder/docker-register
+ExecStart=/usr/bin/docker run --name docker-register -e HOST_IP=$(hostname --ip-address | awk '{print $1}') -e ETCD_HOST=$(hostname --ip-address | awk '{print $1}'):4001 -v /var/run/docker.sock:/var/run/docker.sock jwilder/docker-register
 ExecStop=/usr/bin/docker stop docker-register
 
 [X-Fleet]

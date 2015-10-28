@@ -2,6 +2,8 @@
 Description=Docker Discover Service
 After=docker.service
 Requires=docker.service
+After=docker-register.service
+Requires=docker-register.service
 
 [Service]
 TimeoutStartSec=0

@@ -1,14 +1,14 @@
 [Unit]
-Description=Docker Register Service
+Description=docker-register
 After=docker.service
-Requires=docker.service
 
 [Service]
+EnvironmentFile=/etc/environment
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill docker-register
 ExecStartPre=-/usr/bin/docker rm docker-register
 ExecStartPre=/usr/bin/docker pull jwilder/docker-register
-ExecStart=/usr/bin/bash -c "/usr/bin/docker run --name docker-register -e HOST_IP=$(hostname -i | awk '{print $1}') -e ETCD_HOST=$(hostname -i | awk '{print $1}'):4001 -v /var/run/docker.sock:/var/run/docker.sock jwilder/docker-register"
+ExecStart=/usr/bin/docker run --name docker-register -e HOST_IP=${COREOS_PRIVATE_IPV4} -e ETCD_HOST=${COREOS_PRIVATE_IPV4}:4001 -v /var/run/docker.sock:/var/run/docker.sock jwilder/docker-register
 ExecStop=/usr/bin/docker stop docker-register
 
 [X-Fleet]

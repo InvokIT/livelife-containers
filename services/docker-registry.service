@@ -1,7 +1,7 @@
 [Unit]
 Description=Private Docker Registry
-After=docker.service
-Requires=docker.service
+After=docker.service docker-register.service
+Requires=docker.service docker-register.service
 
 [Service]
 TimeoutStartSec=0

@@ -1,13 +1,13 @@
 [Unit]
 Description=RTMP Server
-After=docker.service docker-registry.service
-Requires=docker.service docker-registry.service
+After=docker.service docker-registry.service docker-discover.service docker-register.service
+Requires=docker.service docker-registry.service docker-discover.service docker-register.service
 
 [Service]
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill rtmp-%i
 ExecStartPre=-/usr/bin/docker rm rtmp-%i
-ExecStartPre=/usr/bin/bash -c "/usr/bin/docker pull $(etcdctl get /services/docker-registry)/rtmp"
+ExecStartPre=/usr/bin/bash -c "/usr/bin/docker pull $(hostname -i | awk '{print $1}'):5000/rtmp"
 ExecStart=/usr/bin/bash -c "/usr/bin/docker run --name rtmp-%i -p 1935:1935 $(hostname -i | awk '{print $1}'):5000/rtmp"
 ExecStop=/usr/bin/docker stop rtmp-%i
 

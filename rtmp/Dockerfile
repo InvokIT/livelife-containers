@@ -62,14 +62,13 @@ RUN rm -rf /root/*
 
 RUN ldconfig
 
-EXPOSE 1935
+EXPOSE 8080 1935
 
 COPY nginx.conf /etc/nginx/
 COPY entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENV LOG_PATH_ACCESS=/var/log/nginx/access.log
-ENV LOG_PATH_ERROR=/var/log/nginx/error.log
+RUN mkdir -p /var/log/app_engine/custom_logs
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

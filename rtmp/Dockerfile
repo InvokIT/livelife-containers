@@ -1,3 +1,4 @@
+#FROM debian:jessie
 FROM ubuntu:14.04
 MAINTAINER LiveLife Streaming <livelifestreaming@gmail.com>
 
@@ -5,8 +6,8 @@ ENV NGINX_VERSION=1.9.1 \
     NGINX_RTMP_VERSION=1.1.7
 
 RUN apt-get -q -y update \
-    && apt-get -q -y install cron logrotate make build-essential libssl-dev \
-        zlib1g-dev libpcre3 libpcre3-dev curl pgp yasm \
+    && apt-get -q -y install build-essential libssl-dev \
+        zlib1g-dev libpcre3 libpcre3-dev curl pgp \
     && apt-get -q -y build-dep nginx \
     && apt-get -q -y clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
@@ -60,6 +61,8 @@ RUN cd /root \
 
 RUN rm -rf /root/*
 
+RUN mkdir -p /var/log/app_engine/custom_logs
+
 RUN ldconfig
 
 EXPOSE 8080 1935
@@ -68,7 +71,5 @@ COPY nginx.conf /etc/nginx/
 COPY entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
-
-RUN mkdir -p /var/log/app_engine/custom_logs
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

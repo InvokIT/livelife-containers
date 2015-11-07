@@ -1,5 +1,5 @@
-module: rtmp
 runtime: custom
+module: rtmp
 vm: true
 api_version: 1
 #instance_class: F1
@@ -19,12 +19,11 @@ automatic_scaling:
 network:
   forwarded_ports:
   - 1935
-  - 8080
   instance_tag: rtmp
-  #name: <network-name>
+  name: default
 
 resources:
-  cpu: .5
+  cpu: 0.5
   memory_gb: 0.5
   disk_size_gb: 10
 

@@ -1,0 +1,17 @@
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "rtmp"
+  },
+  "spec": {
+    "ports": [{
+      "port": 1935,
+      "targetPort": 1935
+    }],
+    "selector": {
+      "app": "rtmp"
+    },
+    "type": "LoadBalancer"
+  }
+}

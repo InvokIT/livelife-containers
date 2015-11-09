@@ -61,11 +61,11 @@ RUN cd /root \
 
 RUN rm -rf /root/*
 
-RUN mkdir -p /var/log/app_engine/custom_logs
+#RUN mkdir -p /var/log/app_engine/custom_logs
 
 RUN ldconfig
 
-EXPOSE 8080 1935
+EXPOSE 1935
 
 COPY nginx.conf /etc/nginx/
 COPY entrypoint.sh /usr/local/bin/

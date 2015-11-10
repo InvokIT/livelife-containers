@@ -2,7 +2,11 @@
   "kind": "Service",
   "apiVersion": "v1",
   "metadata": {
-    "name": "rtmp"
+    "name": "rtmp",
+    "labels": {
+      "name":"rtmp",
+      "role":"service"
+    }
   },
   "spec": {
     "ports": [{

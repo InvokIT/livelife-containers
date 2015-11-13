@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 ENV NODE_ENV=production
 
 ONBUILD COPY package.json /usr/src/app/
-ONBUILD RUN npm install
+ONBUILD RUN npm_config_registry=http://localhost:4873 npm install
 ONBUILD COPY . /usr/src/app
 
 ONBUILD ENTRYPOINT ["coffee", "main.coffee", "--nodejs"]

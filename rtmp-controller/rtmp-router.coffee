@@ -25,7 +25,7 @@ onIngestUpdate = (req, res) ->
 	if channelExists and streamKeyIsValid
 		res.sendStatus 200
 
-		# Set channel as live
+		# TODO Set channel as live
 		redis.set "channels/#{channelName}/rtmp-server", , 60
 	else
 		res.sendStatus 403

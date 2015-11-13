@@ -3,34 +3,40 @@ kind: ReplicationController
 apiVersion: v1
 metadata:
   name: mongodb-instance-{{INSTANCE}}
+  labels:
+    app: mongodb
 spec:
   replicas: 1
   selector:
-    name: mongodb
+    app: mongodb
+    instance: "{{INSTANCE}}"
   template:
     spec:
       manifest:
         version: v1
         id: mongodb
       containers:
-        - name: mongodb
+        - name: mongodb-instance
           image: mongo:3.2
           command:
             - mongod
             - "--replSet"
-            - rs0
-            - "--smallfiles"
-            - "--noprealloc"
+            - "rs0"
+            - "--storageEngine"
+            - "wiredTiger"
           ports:
             - containerPort: 27017
           volumeMounts:
             - name: mongo-data
               mountPath: /data/db
+          limits:
+            #memory: "1.5GB"
+            #cpu: "500m"
         - name: mongodb-sidecar
-          image: leportlabs/mongo-k8s-sidecar
+          image: eu.gcr.io/steady-cat-112112/mongo-k8s-sidecar:latest
           env:
             - name: MONGO_SIDECAR_POD_LABELS
-              value: "name=mongodb"
+              value: "app=mongodb"
       volumes:
         - name: mongo-data
           gcePersistentDisk:
@@ -38,4 +44,5 @@ spec:
             fsType: xfs
     metadata:
       labels:
-        name: mongodb
+        app: mongodb
+        instance: "{{INSTANCE}}"

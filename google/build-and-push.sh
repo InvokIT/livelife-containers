@@ -10,7 +10,7 @@ NPM_REGISTRY="http://localhost:4873"
 DOCKER_REGISTRY="eu.gcr.io/steady-cat-112112"
 
 NPM_PKGS=()
-CONTAINERS=("rtmp")
+CONTAINERS=("rtmp" "mongo-k8s-sidecar")
 #UNITS=("rtmp" "transcoder" "transcoder-nfs-server")
 
 for i in "${NPM_PKGS[@]}"

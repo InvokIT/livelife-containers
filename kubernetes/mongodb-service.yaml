@@ -3,10 +3,11 @@ kind: Service
 metadata:
   labels:
     name: mongodb
+    kind: service
   name: mongodb
 spec:
   ports:
     - port: 27017
       targetPort: 27017
   selector:
-    name: mongodb
+    app: mongodb

@@ -1,0 +1,41 @@
+id: mongodb-controller
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: mongodb-instance-{{INSTANCE}}
+spec:
+  replicas: 1
+  selector:
+    name: mongodb
+  template:
+    spec:
+      manifest:
+        version: v1
+        id: mongodb
+      containers:
+        - name: mongodb
+          image: mongo:3.2
+          command:
+            - mongod
+            - "--replSet"
+            - rs0
+            - "--smallfiles"
+            - "--noprealloc"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
+        - name: mongodb-sidecar
+          image: leportlabs/mongo-k8s-sidecar
+          env:
+            - name: MONGO_SIDECAR_POD_LABELS
+              value: "name=mongodb"
+      volumes:
+        - name: mongo-data
+          gcePersistentDisk:
+            pdName: mongo-{{INSTANCE}}
+            fsType: xfs
+    metadata:
+      labels:
+        name: mongodb

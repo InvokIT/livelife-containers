@@ -1,20 +1,18 @@
 express = require "express"
 router = express.Router()
-logger = require("./log")
-Redis = require "ioredis"
-
-redis = new Redis("redis://#{process.env.REDIS_ADDRESS}")
+log = require("log4js").getLogger "rtmp-router"
+dal = require "ll-dal"
 
 onIngestPublish = (req, res) ->
-	logger.trace "onIngestPublish"
+	log.trace "onIngestPublish"
 
 	onIngestUpdate req, res
 
 onIngestPublishDone = (req, res) ->
-	logger.trace "onIngestPublishDone"
+	log.trace "onIngestPublishDone"
 
 onIngestUpdate = (req, res) ->
-	logger.trace "onIngestUpdate"
+	log.trace "onIngestUpdate"
 	channelName = req.body.name
 	streamKey = req.body.key
 
@@ -25,36 +23,36 @@ onIngestUpdate = (req, res) ->
 	if channelExists and streamKeyIsValid
 		res.sendStatus 200
 
-		# TODO Set channel as live
-		redis.set "channels/#{channelName}/rtmp-server", , 60
+		# Set channel as live
+		dal.LiveChannels
 	else
 		res.sendStatus 403
 
 router.post "/publish", (req, res) ->
-	logger.trace "/publish"
+	log.trace "/publish"
 	rtmpAppName = req.body.app
 	switch rtmpAppName
 		when "ingest" then onIngestPublish req, res
 		else
-			logger.warn "/publish: Invalid rtmpAppName '#{rtmpAppName}'."
+			log.warn "/publish: Invalid rtmpAppName '#{rtmpAppName}'."
 			res.sendStatus 422
 
 router.post "/publish_done", (req, res) ->
-	logger.trace "/publish_done"
+	log.trace "/publish_done"
 	rtmpAppName = req.body.app
 	switch rtmpAppName
 		when "ingest" then onIngestPublishDone req, res
 		else
-			logger.warn "/publish_done: Invalid rtmpAppName '#{rtmpAppName}'."
+			log.warn "/publish_done: Invalid rtmpAppName '#{rtmpAppName}'."
 			res.sendStatus 422
 
 router.post "/update"
-	logger.trace "/update"
+	log.trace "/update"
 	rtmpAppName = req.body.app
 	switch rtmpAppName
 		when "ingest" then onIngestUpdate req, res
 		else
-			logger.warn "/update: Invalid rtmpAppName '#{rtmpAppName}'."
+			log.warn "/update: Invalid rtmpAppName '#{rtmpAppName}'."
 			res.sendStatus 422
 
 module.exports = router

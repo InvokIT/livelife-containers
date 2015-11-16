@@ -16,7 +16,10 @@ CONTAINERS=("rtmp" "mongo-k8s-sidecar")
 for i in "${NPM_PKGS[@]}"
 do
 	echo Publishing package $i...
-	npm_config_registry=${NPM_REGISTRY} npm publish  ${DIR}/$i
+	cd ${DIR}/$i
+	npm run build || true
+	npm_config_registry=${NPM_REGISTRY} npm publish
+	cd ${DIR}
 done
 
 for i in "${CONTAINERS[@]}"

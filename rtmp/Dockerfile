@@ -67,8 +67,6 @@ RUN ldconfig
 
 EXPOSE 1935
 
-ENV RTMP_CTRL_ADDRESS=localhost
-
 COPY nginx.conf /etc/nginx/
 COPY entrypoint.sh /usr/local/bin/
 

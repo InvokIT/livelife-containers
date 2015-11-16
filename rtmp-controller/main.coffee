@@ -2,8 +2,10 @@ express = require "express"
 bodyParser = require "body-parser"
 log = require("log4js").getLogger "main"
 
+if process.env.NODE_ENV is "production"
+	require("log4js").setGlobalLogLevel "[all]", "INFO"
+
 port = process.env.PORT or 80
-environment = process.env.NODE_ENV or "production"
 
 app = express()
 

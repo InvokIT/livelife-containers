@@ -1,0 +1,27 @@
+id: rtmp-ctrl-controller
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: rtmp-controller
+  labels:
+    app: rtmp-controller
+spec:
+  replicas: 3
+  selector:
+    app: rtmp-controller
+  template:
+    spec:
+      manifest:
+        version: v1
+        id: rtmp-controller
+      containers:
+        - name: rtmp-controller
+          image: eu.gcr.io/steady-cat-112112/rtmp-controller:latest
+          ports:
+            - containerPort: 80
+          limits:
+            memory: "500MB"
+            cpu: "10m"
+    metadata:
+      labels:
+        app: rtmp-controller

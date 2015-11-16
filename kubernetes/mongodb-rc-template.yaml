@@ -30,8 +30,8 @@ spec:
             - name: mongo-data
               mountPath: /data/db
           limits:
-            #memory: "1.5GB"
-            #cpu: "500m"
+            memory: "1.5GB"
+            cpu: "500m"
         - name: mongodb-sidecar
           image: eu.gcr.io/steady-cat-112112/mongo-k8s-sidecar:latest
           env:

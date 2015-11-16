@@ -3,12 +3,6 @@ router = express.Router()
 log = require("log4js").getLogger "rtmp-router"
 dal = require "ll-dal"
 
-getLocalIp = ->
-	return new Promise (resolve, reject) ->
-		hostname = require("os").hostname()
-		require("dns").lookup hostname, family: 4, (err, address, family) ->
-			if err? then reject err else resolve address
-
 isLocalRelay = (req) ->
 	req.body.flashver is "ngx-local-relay" and req.body.addr.startsWith "unix:"
 
@@ -40,10 +34,10 @@ onIngestUpdate = (req, res) ->
 
 	if channelExists and streamKeyIsValid
 		# Set channel as live
-		getLocalIp()
-		.then (ip) ->
-			dal.use (facades) ->
-				facades.LiveChannel.save channelName, ip
+		ip = req.ip
+		dal.use (facades) ->
+			facades.LiveChannel.save channelName, ip
+			.then -> log.info "#{channelName} rtmp address updated to #{ip}."
 		.then -> res.sendStatus 200
 		.catch (err) ->
 			log.error "onIngestUpdate: #{err}"

@@ -13,8 +13,8 @@ describe "LiveChannel", ->
 	afterEach ->
 
 	it "should be included in db.use", ->
-		this.db.use (models) ->
-			expect(models.LiveChannel).to.exist
+		this.db.use (facades) ->
+			expect(facades.LiveChannel).to.exist
 			return Promise.resolve()
 
 	describe "save", ->

@@ -6,21 +6,23 @@ createModelFacade = require "./modelFacadeFactory"
 assert = require "assert"
 _ = require "lodash"
 
+mongoose.Promise = Promise
+
 # Load models
-modelData = do ->
-	modelNames = (fileName[0...fileName.lastIndexOf('.')] for fileName in fs.readdirSync "#{__dirname}/models")
+schemaData = do ->
+	schemaNames = (fileName[0...fileName.lastIndexOf('.')] for fileName in fs.readdirSync "#{__dirname}/schemas")
 
 	r = {}
 
-	for mn in modelNames
-		d = require "./models/#{mn}"
+	for mn in schemaNames
+		d = require "./schemas/#{mn}"
 		r[mn] = d
 
 	return r
 
 createModelsOnConnection = (connection) ->
 	r = {}
-	for mn, md of modelData
+	for mn, md of schemaData
 		r[mn] = connection.model mn, md.schema
 		assert r[mn]
 	return r
@@ -28,16 +30,16 @@ createModelsOnConnection = (connection) ->
 createFacades = (models) ->
 	r = {}
 
-	for mn, md of modelData
-		model = models[mn]
+	for sn, sd of schemaData
+		model = models[sn]
 
 		assert model
 
-		{facadeExtensions} = md
+		{facadeExtensions} = sd
 
 		facade = createModelFacade model, facadeExtensions
 
-		r[mn] = facade
+		r[sn] = facade
 
 	return r
 

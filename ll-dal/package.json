@@ -1,6 +1,6 @@
 {
   "name": "ll-dal",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "main": "build/index.js",
   "scripts": {
     "build": "coffee --compile --bare --output build/ src/",

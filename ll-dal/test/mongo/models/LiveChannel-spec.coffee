@@ -1,7 +1,11 @@
 expect = require("chai").expect
 prepareDb = require "../../../src/mongo/db"
 
+require("mongoose").set "debug", process.env.NODE_ENV isnt "production"
+
 describe "LiveChannel", ->
+
+	this.timeout 10000
 
 	beforeEach ->
 		this.db = prepareDb "localhost"
@@ -13,10 +17,16 @@ describe "LiveChannel", ->
 			expect(models.LiveChannel).to.exist
 			return Promise.resolve()
 
-	describe "save & findRtmpAddress", ->
-		it "should save channelName and rtmpAddress and read it back", ->
-			this.db.use (models) ->
-				models.LiveChannel.save "testChannel", "testRtmpAddress"
+	describe "save", ->
+		it "should save channelName and rtmpAddress", ->
+			this.db.use (facades) ->
+				facades.LiveChannel.save "testChannel", "testRtmpAddress"
 				.then ->
-					models.LiveChannel.findRtmpAddress "testChannel"
-					.then (d) -> expect(d.rtmpAddress).to.be.equal "testRtmpAddress"
+					facades.LiveChannel.findRtmpAddress "testChannel"
+					.then (rtmpAddress) -> expect(rtmpAddress).to.be.equal "testRtmpAddress"
+
+	describe "findRtmpAddress", ->
+		it "should return null when channelName is not in the collection", ->
+			this.db.use (facades) ->
+				facades.LiveChannel.findRtmpAddress "nonexistingChannel"
+				.then (rtmpAddress) -> expect(rtmpAddress).to.be.null

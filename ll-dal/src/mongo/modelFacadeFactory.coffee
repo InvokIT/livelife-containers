@@ -86,6 +86,6 @@ module.exports = (model, extensions) ->
 	facade = Object.create defaultFacade
 	facade._model = model
 
-	facade[methodName] = method for methodName, method of extensions if extensions?
+	facade[methodName] = method.bind(undefined, model) for methodName, method of extensions if extensions?
 
 	return facade

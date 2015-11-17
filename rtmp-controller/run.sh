@@ -8,4 +8,4 @@ set -e
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-docker build -t qvazar/rtmp-controller ${DIR} && echo "Running..." && docker run -d --name rtmp-controller -p 80:80 --link mongodb:mongodb qvazar/rtmp-controller
+docker build -t qvazar/rtmp-controller ${DIR} && echo "Running rtmp-controller..." && docker run -d --name rtmp-controller --link mongodb:mongodb qvazar/rtmp-controller

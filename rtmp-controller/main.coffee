@@ -9,6 +9,8 @@ port = process.env.PORT or 80
 
 app = express()
 
+app.set 'trust proxy', ["loopback", "uniquelocal"]
+
 app.use bodyParser.urlencoded extended: true
 app.use bodyParser.json()
 

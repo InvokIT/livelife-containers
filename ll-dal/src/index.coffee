@@ -1,9 +1,22 @@
 mongoose = require "mongoose"
+k8s = require "./k8s"
+log = require("log4js").getLogger "index"
 
-mongoose.set "debug", process.env.NODE_ENV isnt "production"
+environment = process.env.NODE_ENV
 
-console.info "NODE_ENV: #{process.env.NODE_ENV}"
+mongoose.set "debug", environment isnt "production"
 
-serverHost = process.env.MONGO_HOST or "mongodb"
+podLabelSelector = process.env.MONGO_POD_SELECTOR
 
-module.exports = require("./mongo/db")(serverHost)
+if podLabelSelector?
+	try
+		podLabelSelector = JSON.parse podLabelSelector
+	catch err
+		log.error "Could not parse MONGO_POD_SELECTOR: #{err}"
+		podLabelSelector = null
+else
+	podLabelSelector = app: "mongodb"
+
+hostLocator = -> k8s.getPodAddresses podLabelSelector
+
+module.exports = require("./mongo/db") hostLocator, "rs0"

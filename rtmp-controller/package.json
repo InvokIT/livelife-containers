@@ -1,6 +1,6 @@
 {
-  "name": "rtmp-monitor",
-  "version": "0.1.2",
+  "name": "rtmp-controller",
+  "version": "0.1.4",
   "description": "",
   "main": "main.coffee",
   "scripts": {
@@ -10,8 +10,9 @@
   "dependencies": {
     "body-parser": "^1.13.1",
     "express": "^4.12.4",
-    "ll-dal": "^0.1.0",
+    "ll-dal": "^0.2.0",
     "log4js": "^0.6.25",
+    "node-promisify": "^0.2.2",
     "promise": "^7.0.3"
   }
 }

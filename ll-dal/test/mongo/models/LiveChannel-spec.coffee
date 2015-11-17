@@ -8,7 +8,7 @@ describe "LiveChannel", ->
 	this.timeout 10000
 
 	beforeEach ->
-		this.db = prepareDb "localhost"
+		this.db = prepareDb -> Promise.resolve ["localhost"]
 
 	afterEach ->
 

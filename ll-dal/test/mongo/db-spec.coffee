@@ -3,12 +3,15 @@ db = require "../../src/mongo/db"
 
 describe "db", ->
 
+	beforeEach ->
+		this.db = db -> Promise.resolve ["localhost"]
+
 	it "should connect successfully to local test server", ->
-		db("localhost").use (models) -> Promise.resolve()
+		this.db.use (models) -> Promise.resolve()
 
 	it "should fail connecting to nonexisting server", ->
 		return new Promise (resolve, reject) ->
-			db("nonexisting").use (models) -> Promise.resolve()
+			db(-> Promise.resolve ["void"]).use (models) -> Promise.resolve()
 				.catch -> resolve()
 				.then -> reject()
 

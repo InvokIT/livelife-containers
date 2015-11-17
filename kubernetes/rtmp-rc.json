@@ -29,7 +29,24 @@
               {
                 "containerPort": 1935
               }
-            ]
+            ],
+            "limits": {
+              "memory": "200M",
+              "cpu": "100m"
+            }
+          },
+          {
+            "name": "rtmp-controller",
+            "image": "eu.gcr.io/steady-cat-112112/rtmp-controller:latest",
+            "ports": [
+              {
+                "containerPort": 80
+              }
+            ],
+            "limits": {
+              "memory": "100M",
+              "cpu": "50m"
+            }
           }
         ]
       }

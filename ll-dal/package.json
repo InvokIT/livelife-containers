@@ -1,6 +1,6 @@
 {
   "name": "ll-dal",
-  "version": "0.1.6",
+  "version": "0.2.2",
   "main": "build/index.js",
   "scripts": {
     "build": "coffee --compile --bare --output build/ src/",
@@ -18,7 +18,9 @@
   "dependencies": {
     "lodash": "^3.10.1",
     "log4js": "^0.6.27",
-    "mongoose": "^4.2.5"
+    "mongoose": "^4.2.5",
+    "node-kubernetes-client": "^0.2.3",
+    "promisify-node": "^0.2.1"
   },
   "publishConfig": {
     "registry": "http://localhost:4873/"

@@ -5,6 +5,7 @@ fs = require "fs"
 createModelFacade = require "./modelFacadeFactory"
 assert = require "assert"
 _ = require "lodash"
+promisify = require "promisify-node"
 
 mongoose.Promise = Promise
 
@@ -75,62 +76,60 @@ createConnectionModelFacades = (connection) ->
 	return facades
 ###
 
-prepareDb = (hostname, replicaSet = "rs0") ->
-	log.debug "Entering prepareDb"
+prepareDb = (hostLocator, replicaSet = "rs0") ->
+	log.debug "Entering prepareDb(#{hostLocator}, #{replicaSet})"
 
 	connect = ->
-		return new Promise (resolve, reject) ->
-			dns.lookup hostname, { family: 4, all: true }, (err, addresses) ->
-				if err?
-					log.error "DNS lookup for #{hostname} failed: #{err}"
+		hostLocator().then (addresses) ->
+			connString = "mongodb://#{addresses.join(',')}"
+
+			if addresses.length > 1
+				connString += "?replicaSet=#{replicaSet}"
+
+			connection = mongoose.createConnection()
+
+			connection.on "connecting", (args...) -> log.trace "Connecting to #{connString}."
+			connection.on "connected", -> log.info "Connected to #{connString}."
+			connection.on "open", -> log.trace "Opened connection to #{connString}."
+			connection.on "disconnecting", -> log.trace "Disconnecting with #{connString}."
+			connection.on "disconnected", -> log.trace "Disconnected with #{connString}."
+			connection.on "close", -> log.trace "Closed connection to #{connString}."
+			connection.on "reconnected", -> log.trace "Reconnected to #{connString}."
+			connection.on "error", (err) -> log.error "Connection error: #{err}"
+			connection.on "fullsetup", -> log.trace "Connected to all nodes in replica set #{replicaSet} on #{connString}."
+
+			connString = "mongodb://#{addresses.join(',')}/"
+
+			if addresses.length > 1
+				connString += "?replicaSet=#{replicaSet}"
+
+			return promisify(connection.open).call connection, connString
+			.then -> connection
+			###
+			connection.open connString, (err) ->
+				if (err)?
+					log.error "Failed to open connection string #{connString}. #{err}"
 					reject err
 					return
 
-				addresses = _.chain(addresses).map("address").uniq()
-
-				log.info "Resolved #{hostname} to #{JSON.stringify(addresses)}."
-
-				connString = "mongodb://#{addresses.join(',')}"
-
-				if addresses.length > 1
-					connString += "?replicaSet=#{replicaSet}"
-
-				connection = mongoose.createConnection()
-
-				connection.on "connecting", (args...) -> log.trace "Connecting to #{connString}."
-				connection.on "connected", -> log.info "Connected to #{connString}."
-				connection.on "open", -> log.trace "Opened connection to #{connString}."
-				connection.on "disconnecting", -> log.trace "Disconnecting with #{connString}."
-				connection.on "disconnected", -> log.trace "Disconnected with #{connString}."
-				connection.on "close", -> log.trace "Closed connection to #{connString}."
-				connection.on "reconnected", -> log.trace "Reconnected to #{connString}."
-				connection.on "error", (err) -> log.error "Connection error: #{err}"
-				connection.on "fullsetup", -> log.trace "Connected to all nodes in replica set #{replicaSet} on #{connString}."
-
-				connString = "mongodb://#{addresses.join(',')}"
-
-				if addresses.length > 1
-					connString += "?replicaSet=#{replicaSet}"
-
-				connection.open connString, (err) ->
-					if (err)?
-						log.error "Failed to open connection string #{connString}. #{err}"
-						reject err
-						return
-
-					resolve connection
+				resolve connection
+			###
 
 	return use: (useFacadesCallback) ->
-			log.debug "Entering use"
+		log.debug "Entering use"
 
-			return connect().then (connection) ->
-					models = createModelsOnConnection connection
-					facades = createFacades models
+		log.debug "Opening connection"
+		connect()
+		.then (connection) ->
+			models = createModelsOnConnection connection
+			facades = createFacades models
 
-					log.debug "models: #{JSON.stringify(Object.keys(models))}"
-					log.debug "facades: #{JSON.stringify(Object.keys(facades))}"
+			log.debug "models: #{JSON.stringify(Object.keys(models))}"
+			log.debug "facades: #{JSON.stringify(Object.keys(facades))}"
 
-					useFacadesCallback facades
-					.then -> connection.close()
+			useFacadesCallback facades
+			.then ->
+				log.debug "Closing connection"
+				connection.close()
 
 module.exports = prepareDb

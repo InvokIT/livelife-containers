@@ -6,7 +6,7 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 
 REGISTRY_CONTAINERID=$(${DIR}/run-npm-registry.sh)
 
-trap "{ docker kill ${REGISTRY_CONTAINERID} && docker rm ${REGISTRY_CONTAINERID}; exit 255; }" EXIT
+trap "{ docker kill ${REGISTRY_CONTAINERID} && docker rm ${REGISTRY_CONTAINERID}; }" EXIT
 
 NPM_REGISTRY="http://localhost:4873/"
 DOCKER_REGISTRY="eu.gcr.io/steady-cat-112112"
@@ -19,7 +19,7 @@ for i in "${NPM_PKGS[@]}"
 do
 	echo Publishing package $i...
 	cd ${DIR}/$i
-	npm run build || true
+	npm run build
 	#npm_config_registry=${NPM_REGISTRY} npm publish
 	npm publish
 	cd ${DIR}
@@ -31,8 +31,6 @@ do
 	docker build -t ${DOCKER_REGISTRY}/${i} ${DIR}/${i}/
 	echo Done building image ${DOCKER_REGISTRY}/${i}
 done
-
-
 
 for i in "${CONTAINERS[@]}"
 do

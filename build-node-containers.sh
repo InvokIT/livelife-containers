@@ -4,9 +4,9 @@ set -e
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-docker run --name sinopia -d -p 4873:4873 keyvanfatehi/sinopia:latest
+docker run --name sinopia -d -p 4873:4873 keyvanfatehi/sinopia:latest || true
 
-NPM_PKGS=("ll-cache")
+NPM_PKGS=("ll-dal")
 CONTAINERS=("rtmp-controller")
 REGISTRY=http://localhost:4873
 #npm set registry http://localhost:4873

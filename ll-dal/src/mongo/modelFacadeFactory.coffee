@@ -1,7 +1,4 @@
 log = require("log4js").getLogger "mongo/modelFacadeFactory"
-defaultFacadeLog = require("log4js").getLogger "mongo/modelFacadeFactory/defaultFacade"
-
-defaultQueryOptions = lean: true
 
 defaultFacade = require "./defaultFacade"
 

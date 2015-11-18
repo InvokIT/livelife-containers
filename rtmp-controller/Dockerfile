@@ -12,8 +12,7 @@ ENV NODE_ENV=production
 EXPOSE 80
 
 COPY package.json /usr/src/app/
-# Set NPM registry to the docker gateway ip and run npm install
-RUN npm_config_registry=http://$(routel | grep -m 1 default | awk {'print $2'}):4873 npm install
+RUN npm install
 COPY . /usr/src/app/
 
-ENTRYPOINT ["coffee", "main.coffee"]
+ENTRYPOINT ["npm", "start"]

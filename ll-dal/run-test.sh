@@ -1,6 +1,7 @@
 #!/bin/sh
 
-CONTAINER_ID=$(docker run -d -p 27017:27017 mongo:3.2 mongod)
+CONTAINER_ID=$(docker run -d -P mongo:3.2 mongod)
+MONGO_PORT=$(docker port $(CONTAINER_ID) | awk {'print $3'} | sed s/0.0.0.0://)
 
 find test/ -name *-spec.coffee | xargs mocha --compilers coffee:coffee-script/register
 

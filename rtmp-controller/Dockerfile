@@ -1,5 +1,7 @@
 FROM node:5
 
+ARG NPM_CONFIG_REGISTRY
+RUN echo ${NPM_CONFIG_REGISTRY}
 ENV COFFEE_VERSION=1.10.0
 
 RUN npm install -g coffee-script@${COFFEE_VERSION}

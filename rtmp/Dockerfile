@@ -68,6 +68,7 @@ RUN ldconfig
 EXPOSE 1935
 
 COPY nginx.conf /etc/nginx/
+COPY nginx-test.conf /etc/nginx/
 COPY entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/entrypoint.sh

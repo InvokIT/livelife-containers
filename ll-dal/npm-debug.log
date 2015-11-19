@@ -1,0 +1,115 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'publish' ]
+2 info using npm@3.3.6
+3 info using node@v5.0.0
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/home/sj/Code/livelife-containers/ll-dal',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /home/sj/.npm/ll-dal/0.2.8/package.tgz not in flight; packing
+9 info lifecycle ll-dal@0.2.8~prepublish: ll-dal@0.2.8
+10 verbose lifecycle ll-dal@0.2.8~prepublish: unsafe-perm in lifecycle true
+11 verbose lifecycle ll-dal@0.2.8~prepublish: PATH: /usr/lib/node_modules/npm/bin/node-gyp-bin:/home/sj/Code/livelife-containers/ll-dal/node_modules/.bin:/home/sj/google-cloud-sdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+12 verbose lifecycle ll-dal@0.2.8~prepublish: CWD: /home/sj/Code/livelife-containers/ll-dal
+13 silly lifecycle ll-dal@0.2.8~prepublish: Args: [ '-c', 'coffee --compile --bare --output build/ src/' ]
+14 silly lifecycle ll-dal@0.2.8~prepublish: Returned: code: 0  signal: null
+15 verbose tar pack [ '/home/sj/.npm/ll-dal/0.2.8/package.tgz',
+15 verbose tar pack   '/home/sj/Code/livelife-containers/ll-dal' ]
+16 verbose tarball /home/sj/.npm/ll-dal/0.2.8/package.tgz
+17 verbose folder /home/sj/Code/livelife-containers/ll-dal
+18 verbose addLocalTarball adding from inside cache /home/sj/.npm/ll-dal/0.2.8/package.tgz
+19 silly cache afterAdd ll-dal@0.2.8
+20 verbose afterAdd /home/sj/.npm/ll-dal/0.2.8/package/package.json not in flight; writing
+21 verbose afterAdd /home/sj/.npm/ll-dal/0.2.8/package/package.json written
+22 silly publish { name: 'll-dal',
+22 silly publish   version: '0.2.8',
+22 silly publish   main: 'build/index.js',
+22 silly publish   scripts:
+22 silly publish    { prepublish: 'coffee --compile --bare --output build/ src/',
+22 silly publish      test: 'sh run-test.sh' },
+22 silly publish   keywords: [],
+22 silly publish   author: { name: 'Sebastian Jørgensen' },
+22 silly publish   license: 'MIT',
+22 silly publish   devDependencies:
+22 silly publish    { chai: '^3.4.1',
+22 silly publish      'chai-as-promised': '^5.1.0',
+22 silly publish      'coffee-script': '^1.10.0',
+22 silly publish      mocha: '^2.3.3' },
+22 silly publish   dependencies:
+22 silly publish    { lodash: '^3.10.1',
+22 silly publish      log4js: '^0.6.27',
+22 silly publish      mongoose: '^4.2.5',
+22 silly publish      'node-kubernetes-client': '^0.2.3',
+22 silly publish      'promisify-node': '^0.2.1' },
+22 silly publish   publishConfig: { registry: 'http://localhost:4873/' },
+22 silly publish   readme: 'ERROR: No README data found!',
+22 silly publish   _id: 'll-dal@0.2.8',
+22 silly publish   _shasum: '82077a1ef740d8c0b54e3f8969f83e5ee2867089',
+22 silly publish   _from: '.' }
+23 verbose getPublishConfig { registry: 'http://localhost:4873/' }
+24 silly mapToRegistry name ll-dal
+25 silly mapToRegistry using default registry
+26 silly mapToRegistry registry http://localhost:4873/
+27 silly mapToRegistry uri http://localhost:4873/ll-dal
+28 verbose publish registryBase http://localhost:4873/
+29 silly publish uploading /home/sj/.npm/ll-dal/0.2.8/package.tgz
+30 verbose request uri http://localhost:4873/ll-dal
+31 verbose request sending authorization for write operation
+32 info attempt registry request try #1 at 11.00.10
+33 verbose request using bearer token for auth
+34 verbose request id 9e90916773664e77
+35 http request PUT http://localhost:4873/ll-dal
+36 http 409 http://localhost:4873/ll-dal
+37 verbose headers { 'x-powered-by': 'Sinopia/1.4.0',
+37 verbose headers   'content-type': 'application/json; charset=utf-8',
+37 verbose headers   'content-length': '49',
+37 verbose headers   vary: 'Accept-Encoding',
+37 verbose headers   'x-status-cat': 'http://flic.kr/p/aV6jzz',
+37 verbose headers   date: 'Thu, 19 Nov 2015 10:00:10 GMT',
+37 verbose headers   connection: 'keep-alive' }
+38 verbose request invalidating /home/sj/.npm/localhost_4873/ll-dal on PUT
+39 verbose request uri http://localhost:4873/ll-dal?write=true
+40 verbose request no auth needed
+41 info attempt registry request try #1 at 11.00.10
+42 verbose request using bearer token for auth
+43 http request GET http://localhost:4873/ll-dal?write=true
+44 http 200 http://localhost:4873/ll-dal?write=true
+45 verbose headers { 'x-powered-by': 'Sinopia/1.4.0',
+45 verbose headers   'content-type': 'application/json; charset=utf-8',
+45 verbose headers   etag: '"be34120e2a35c362aed3637622d9ddab"',
+45 verbose headers   vary: 'Accept-Encoding',
+45 verbose headers   'content-encoding': 'gzip',
+45 verbose headers   'x-status-cat': 'http://flic.kr/p/aVuVsF',
+45 verbose headers   date: 'Thu, 19 Nov 2015 10:00:10 GMT',
+45 verbose headers   connection: 'keep-alive',
+45 verbose headers   'transfer-encoding': 'chunked' }
+46 verbose stack Error: cannot modify pre-existing version
+46 verbose stack     at conflictError (/usr/lib/node_modules/npm/node_modules/npm-registry-client/lib/publish.js:182:11)
+46 verbose stack     at CachingRegistryClient.putNext (/usr/lib/node_modules/npm/node_modules/npm-registry-client/lib/publish.js:145:15)
+46 verbose stack     at /usr/lib/node_modules/npm/node_modules/npm-registry-client/lib/publish.js:128:15
+46 verbose stack     at /usr/lib/node_modules/npm/lib/cache/caching-client.js:53:8
+46 verbose stack     at f (/usr/lib/node_modules/npm/node_modules/once/once.js:17:25)
+46 verbose stack     at /usr/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:76:16
+46 verbose stack     at f (/usr/lib/node_modules/npm/node_modules/once/once.js:17:25)
+46 verbose stack     at CachingRegistryClient.<anonymous> (/usr/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:259:12)
+46 verbose stack     at /usr/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:178:7
+46 verbose stack     at Gunzip.onEnd (zlib.js:227:5)
+47 verbose pkgid ll-dal
+48 verbose cwd /home/sj/Code/livelife-containers/ll-dal
+49 error Linux 3.19.0-32-generic
+50 error argv "/usr/bin/nodejs" "/usr/bin/npm" "publish"
+51 error node v5.0.0
+52 error npm  v3.3.6
+53 error code EPUBLISHCONFLICT
+54 error publish fail Cannot publish over existing version.
+54 error publish fail Update the 'version' field in package.json and try again.
+54 error publish fail
+54 error publish fail To automatically increment version numbers, see:
+54 error publish fail     npm help version
+55 verbose exit [ 1, true ]

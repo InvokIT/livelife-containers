@@ -38,7 +38,7 @@ facadeExtensions =
 	findRtmpAddress: (model, channelName) ->
 		log.trace "findRtmpAddress(#{channelName})"
 
-		model.findOne channelName: channelName, "rtmpAddress", lean: true
+		model.findOne { channelName: channelName }, { rtmpAddress: true }, { lean: true }
 		.exec()
 		.then (doc) ->
 			log.trace "findRtmpAddress(#{channelName}) mongo callback"

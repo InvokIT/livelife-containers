@@ -1,14 +1,10 @@
 expect = require("chai").expect
 prepareDb = require "../../../src/mongo/db"
 
-require("mongoose").set "debug", process.env.NODE_ENV isnt "production"
-
 describe "LiveChannel", ->
 
-	this.timeout 10000
-
 	beforeEach ->
-		this.db = prepareDb -> Promise.resolve ["localhost"]
+		this.db = prepareDb -> Promise.resolve [process.env.MONGO_ADDRESS]
 
 	afterEach ->
 

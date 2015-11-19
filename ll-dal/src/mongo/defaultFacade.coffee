@@ -5,14 +5,19 @@ defaultQueryOptions = lean: true
 
 module.exports =
 
-	create: (values) ->
-		log.trace "create(#{JSON.stringify(values)}"
-		Promise.resolve new this._model values
+	# Create and save
+	create: (valueObjects...) ->
+		log.trace "create(#{JSON.stringify(valueObjects)}"
 
-	findById: (id, propertiesToFind) ->
+		if valueObjects.length is 0
+			throw new Error "Missing arguments."
+
+		this._model.create (if valueObjects.length is 1 then valueObjects[0] else valueObjects)
+
+	find: (id, propertiesToFind) ->
 		log.trace "findById(#{id}, #{propertiesToFind})"
 
-		args = [id, defaultQueryOptions, cb]
+		args = [id, cb]
 		args.splice 1, 0, propertiesToFind if propertiesToFind?
 
 		this._model.findById.apply this._model, args
@@ -20,8 +25,13 @@ module.exports =
 		.catch (err) ->
 			log.error "findById(#{id}, #{propertiesToFind}): #{err}"
 
+
 	save: (documents...) ->
+		throw new Error "Not implemented."
+
 		log.trace "save(#{JSON.stringify(documents)}"
+
+		this._model.update 
 
 		insertDocs = []
 		updateDocs = []
@@ -45,9 +55,11 @@ module.exports =
 		Promise.all queries
 
 	remove: (documents...) ->
+		throw new Error "Not implemented."
 		this.removeById _.map(documents, "_id")
 
 	removeById: (ids...) ->
+		throw new Error "Not implemented."
 		this._model.remove _id: $in: ids
 		.exec()
 

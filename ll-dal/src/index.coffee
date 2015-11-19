@@ -19,4 +19,7 @@ else
 
 hostLocator = -> k8s.getPodAddresses podLabelSelector
 
+if process.env.DAL_DEBUG_HOST?
+	hostLocator = -> Promise.resolve [process.env.DAL_DEBUG_HOST]
+
 module.exports = require("./mongo/db") hostLocator, "rs0"

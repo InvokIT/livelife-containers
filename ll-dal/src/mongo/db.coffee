@@ -21,7 +21,10 @@ schemaData = do ->
 
 	return r
 
+#log.debug "Loaded schemaData: #{JSON.stringify(schemaData)}"
+
 createModelsOnConnection = (connection) ->
+	log.trace "createModelsOnConnection()"
 	r = {}
 	for mn, md of schemaData
 		r[mn] = connection.model mn, md.schema
@@ -29,6 +32,7 @@ createModelsOnConnection = (connection) ->
 	return r
 
 createFacades = (models) ->
+	log.trace "createFacades()"
 	r = {}
 
 	for sn, sd of schemaData
@@ -77,7 +81,7 @@ createConnectionModelFacades = (connection) ->
 ###
 
 prepareDb = (hostLocator, replicaSet = "rs0") ->
-	log.debug "Entering prepareDb(#{hostLocator}, #{replicaSet})"
+	log.debug "prepareDb(#{hostLocator}, #{replicaSet})"
 
 	connect = ->
 		hostLocator().then (addresses) ->
@@ -100,6 +104,8 @@ prepareDb = (hostLocator, replicaSet = "rs0") ->
 
 			connString = "mongodb://#{addresses.join(',')}/"
 
+			log.debug "connString = #{connString}"
+
 			if addresses.length > 1
 				connString += "?replicaSet=#{replicaSet}"
 
@@ -116,20 +122,27 @@ prepareDb = (hostLocator, replicaSet = "rs0") ->
 			###
 
 	return use: (useFacadesCallback) ->
-		log.debug "Entering use"
+		log.trace "use()"
 
 		log.debug "Opening connection"
-		connect()
+		return connect()
 		.then (connection) ->
 			models = createModelsOnConnection connection
 			facades = createFacades models
 
-			log.debug "models: #{JSON.stringify(Object.keys(models))}"
-			log.debug "facades: #{JSON.stringify(Object.keys(facades))}"
+			#log.debug "models: #{JSON.stringify(Object.keys(models))}"
+			#log.debug "facades: #{JSON.stringify(Object.keys(facades))}"
 
-			useFacadesCallback facades
-			.then ->
+			closeConnection = ->
 				log.debug "Closing connection"
 				connection.close()
+
+			log.debug "use() calling useFacadesCallback"
+
+			useFacadesCallback facades
+			.then closeConnection
+			.catch closeConnection
+		.catch (err) ->
+			log.error "Failed to open connection!", err
 
 module.exports = prepareDb

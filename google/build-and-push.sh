@@ -9,9 +9,9 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 
 #trap "{ docker kill ${REGISTRY_CONTAINERID} && docker rm ${REGISTRY_CONTAINERID}; }" EXIT
 
-NPM_REGISTRY_IP=$(ip address show docker0 | grep -Eo '([[:digit:]]{1,3}.){3}[[:digit:]]{1,3}')
+DOCKER_IP=$(ip -4 address show docker0 | grep -Eo '([[:digit:]]{1,3}.){3}[[:digit:]]{1,3}')
 NPM_REGISTRY_PORT=4873 
-NPM_REGISTRY="http://${NPM_REGISTRY_IP}:${NPM_REGISTRY_PORT}/"
+NPM_REGISTRY="http://${DOCKER_IP}:${NPM_REGISTRY_PORT}/"
 DOCKER_REGISTRY="eu.gcr.io/steady-cat-112112"
 
 NPM_PKGS=("ll-dal")
@@ -23,14 +23,20 @@ do
 	echo Publishing package $i...
 	cd ${DIR}/$i
 	#npm_config_registry=${NPM_REGISTRY} npm publish
-	npm publish
+	npm publish || true
 	cd ${DIR}
 done
 
 for i in "${CONTAINERS[@]}"
 do
 	echo Building image ${DOCKER_REGISTRY}/${i}...
-	docker build --build-arg=NPM_CONFIG_REGISTRY=${NPM_REGISTRY} -t ${DOCKER_REGISTRY}/${i} ${DIR}/${i}/
+
+	if grep -q "ARG NPM_CONFIG_REGISTRY" ${DIR}/${i}/Dockerfile; then
+		docker build --build-arg=NPM_CONFIG_REGISTRY=${NPM_REGISTRY} -t ${DOCKER_REGISTRY}/${i} ${DIR}/${i}/
+	else
+		docker build -t ${DOCKER_REGISTRY}/${i} ${DIR}/${i}/
+	fi
+
 	echo Done building image ${DOCKER_REGISTRY}/${i}
 done
 

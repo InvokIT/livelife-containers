@@ -6,11 +6,20 @@ promisify = require "node-promisify"
 dns = require "dns"
 os = require "os"
 
-isLocalRelay = (req) ->
-	req.body.flashver is "ngx-local-relay" and req.body.addr.startsWith "unix:"
+isLocalRelay = (req) -> req.body.flashver is "ngx-local-relay" and req.body.addr.startsWith "unix:"
 
 getLocalIp = () ->
 	promisify(dns.lookup) os.hostname()
+
+saveChannelActivity = (channelName) ->
+	log.trace "saveChannelActivity(#{channelName})"
+
+	return getLocalIp()
+	.then (ip) ->
+		dal.use (facades) ->
+			facades.LiveChannel.save channelName, ip
+			.then -> log.info "#{channelName} rtmpAddress updated to #{ip}."
+	.catch (err) -> log.error "saveChannelActivity(#{channelName}) error", err
 
 onIngestPublish = (req, res) ->
 	log.trace "onIngestPublish()"
@@ -26,11 +35,16 @@ onIngestPublish = (req, res) ->
 	else
 		# If there's already someone publishing to this channel, deny
 		dal.use (facades) ->
-			facades.LiveChannel.getRtmpAddress channelName
+			facades.LiveChannel.findRtmpAddress channelName
 			.then (address) ->
-				if address? then res.sendStatus 409 #Conflict
-		.then ->
-			onIngestUpdate req, res
+				if address?
+					log.info "#{req.ip} tried to publish to busy channel '#{channelName}'"
+					res.sendStatus 409 #Conflict
+					return null
+				else
+					return saveChannelActivity(channelName)
+					.then -> res.sendStatus 200
+		.catch (err) -> res.sendStatus 500
 
 onIngestPublishDone = (req, res) ->
 	channelName = req.body.name
@@ -56,23 +70,19 @@ onIngestUpdate = (req, res) ->
 	if !channelExists or !streamKeyIsValid
 		res.sendStatus 403
 	else
-		# Set channel as live
-		getLocalIp()
-		.then (ip) ->
-			dal.use (facades) ->
-				facades.LiveChannel.save channelName, ip
-				.then -> log.info "#{channelName} rtmp address updated to #{ip}."
-			.then -> res.sendStatus 200
-			.catch (err) ->
-				log.error "onIngestUpdate: #{err}"
-				res.sendStatus 500
+		saveChannelActivity channelName
+		.then -> res.sendStatus 200
+		.catch (err) ->
+			res.sendStatus 500
 
 onIngestPlay = (req, res) ->
 	channelName = req.body.name
 
 	log.trace "onIngestPlay(channelName: #{channelName})"
+	res.sendStatus 200
 
 	# Forward to the server that has this stream, if it is not this server.
+	###
 	ip = req.ip
 	dal.use (facades) ->
 		facades.LiveChannel.getRtmpAddress channelName
@@ -87,6 +97,7 @@ onIngestPlay = (req, res) ->
 	.catch (err) ->
 		log.error "onIngestPlay: #{err}"
 		res.sendStatus 500
+	###
 
 router.post "/publish", (req, res) ->
 	log.trace "/publish"
@@ -139,6 +150,8 @@ router.post "/play", (req, res) ->
 	log.debug "/play: #{JSON.stringify(req.body)}"
 
 	if isLocalRelay req then res.sendStatus 200; return
+
+	rtmpAppName = req.body.app
 
 	switch rtmpAppName
 		when "ingest" then onIngestPlay req, res

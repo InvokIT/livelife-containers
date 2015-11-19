@@ -9,7 +9,7 @@
     "namespace": ""
   },
   "spec": {
-    "replicas": 3,
+    "replicas": 1,
     "selector": {
       "app": "rtmp"
     },
@@ -42,6 +42,9 @@
               {
                 "containerPort": 80
               }
+            ],
+            "env": [
+              { "name": "NODE_ENV", "value": "debug" }
             ],
             "limits": {
               "memory": "100M",

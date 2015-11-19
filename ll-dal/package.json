@@ -1,6 +1,6 @@
 {
   "name": "ll-dal",
-  "version": "0.2.2",
+  "version": "0.2.8",
   "main": "build/index.js",
   "scripts": {
     "prepublish": "coffee --compile --bare --output build/ src/",

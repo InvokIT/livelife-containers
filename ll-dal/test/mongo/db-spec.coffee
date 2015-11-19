@@ -4,7 +4,7 @@ db = require "../../src/mongo/db"
 describe "db", ->
 
 	beforeEach ->
-		this.db = db -> Promise.resolve ["localhost"]
+		this.db = db -> Promise.resolve [process.env.MONGO_ADDRESS]
 
 	it "should connect successfully to local test server", ->
 		this.db.use (models) -> Promise.resolve()

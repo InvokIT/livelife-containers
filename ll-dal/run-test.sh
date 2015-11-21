@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 CONTAINER_ID=$(docker run -d -P mongo:3.2 mongod)
 MONGO_ADDRESS=$(docker port ${CONTAINER_ID} | awk {'print $3'})
 

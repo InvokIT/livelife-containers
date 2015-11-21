@@ -20,11 +20,12 @@ class Requestor
 			body: body
 			auth: bearer: @token
 			qs: queryParameters
+			strictSSL: false
 
 		log.debug "doRequest request options: #{JSON.stringify(options)}"
 
 		return new Promise (resolve, reject) ->
-			doRequest options, (err, response, body) ->
+			request options, (err, response, body) ->
 				if err? then reject err; return
 
 				log.debug "request response: #{JSON.stringify(response)}"
@@ -41,3 +42,5 @@ class Requestor
 
 	replace: (collection, itemName, data) ->
 		@doRequest "PUT", collection, itemName, data
+
+module.exports = Requestor

@@ -1,6 +1,6 @@
 {
   "name": "ll-dal",
-  "version": "0.2.8",
+  "version": "0.2.10",
   "main": "build/index.js",
   "scripts": {
     "prepublish": "coffee --compile --bare --output build/ src/",
@@ -19,7 +19,7 @@
     "lodash": "^3.10.1",
     "log4js": "^0.6.27",
     "mongoose": "^4.2.5",
-    "node-kubernetes-client": "^0.2.3",
+    "ll-k8s": "^0.1.0",
     "promisify-node": "^0.2.1"
   },
   "publishConfig": {

@@ -1,6 +1,6 @@
 {
   "name": "rtmp-controller",
-  "version": "0.1.6",
+  "version": "0.1.11",
   "description": "",
   "main": "main.coffee",
   "scripts": {

@@ -1,6 +1,6 @@
 {
   "name": "ll-k8s",
-  "version": "0.0.1",
+  "version": "0.1.3",
   "main": "build/index.js",
   "scripts": {
     "prepublish": "coffee --compile --bare --output build/ src/",

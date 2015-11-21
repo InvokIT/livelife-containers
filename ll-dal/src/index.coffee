@@ -6,16 +6,7 @@ environment = process.env.NODE_ENV
 
 mongoose.set "debug", environment isnt "production"
 
-podLabelSelector = process.env.MONGO_POD_SELECTOR
-
-if podLabelSelector?
-	try
-		podLabelSelector = JSON.parse podLabelSelector
-	catch err
-		log.error "Could not parse MONGO_POD_SELECTOR: #{err}"
-		podLabelSelector = null
-else
-	podLabelSelector = app: "mongodb"
+podLabelSelector = process.env.MONGO_POD_SELECTOR or "app=mongodb"
 
 hostLocator = -> k8s.getPodAddresses podLabelSelector
 

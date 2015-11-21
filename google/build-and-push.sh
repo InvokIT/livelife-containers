@@ -14,8 +14,8 @@ NPM_REGISTRY_PORT=4873
 NPM_REGISTRY="http://${DOCKER_IP}:${NPM_REGISTRY_PORT}/"
 DOCKER_REGISTRY="eu.gcr.io/steady-cat-112112"
 
-NPM_PKGS=("ll-dal")
-CONTAINERS=("rtmp" "rtmp-controller" "mongo-k8s-sidecar")
+NPM_PKGS=("ll-k8s" "ll-dal")
+CONTAINERS=("rtmp" "rtmp-controller" "mongo-k8s-sidecar" "transcoder-manager")
 #UNITS=("rtmp" "transcoder" "transcoder-nfs-server")
 
 for i in "${NPM_PKGS[@]}"

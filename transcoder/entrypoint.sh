@@ -7,4 +7,4 @@ RTMPSERVER=$1
 STREAM=$2
 DEST_PREFIX=$3
 
-exec /usr/local/bin/hls-transcode.sh $RTMPSERVER $STREAM $DEST_PREFIX
+exec /usr/local/bin/hls-transcode.sh $RTMPSERVER $STREAM

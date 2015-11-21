@@ -1,0 +1,44 @@
+id: rabbitmq-controller
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    app: rabbitmq
+  template:
+    spec:
+      manifest:
+        version: v1
+        id: rabbitmq
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.5-management
+          command:
+            - rabbitmq-server
+            - "--replSet"
+            - "rs0"
+            - "--storageEngine"
+            - "wiredTiger"
+          env:
+            - name: RABBITMQ_ERLANG_COOKIE
+              value: "cluster1"
+          ports:
+            - containerPort: 5672
+            - containerPort: 4369
+            - containerPort: 25672
+            - containerPort: 15672
+          limits:
+            memory: "1GB"
+            cpu: "200m"
+        - name: rabbitmq-sidecar
+          image: eu.gcr.io/steady-cat-112112/rabbitmq-sidecar:latest
+          env:
+            - name: RABBITMQ_SIDECAR_POD_LABELS
+              value: "app=rabbitmq"
+    metadata:
+      labels:
+        app: rabbitmq

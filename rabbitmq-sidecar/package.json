@@ -1,0 +1,27 @@
+{
+  "name": "rabbitmq-sidecar",
+  "version": "0.0.1",
+  "description": "Kubernetes sidecar for rabbitmq",
+  "main": "src/index.coffee",
+  "scripts": {
+    "start": "coffee src/index.coffee"
+  },
+  "keywords": [
+    "kubernetes",
+    "k8s",
+    "rabbit",
+    "rabbitmq",
+    "sidecar",
+    "docker",
+    "cluster"
+  ],
+  "author": "Sebastian Jørgensen",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^2.3.0",
+    "mocha": "^2.2.4"
+  },
+  "dependencies": {
+    "node-kubernetes-client": "^0.1.9"
+  }
+}

@@ -1,0 +1,27 @@
+id: transcoder-manager-controller
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: transcoder-manager
+  labels:
+    app: transcoder-manager
+spec:
+  replicas: 1
+  selector:
+    app: transcoder-manager
+  template:
+    spec:
+      manifest:
+        version: v1
+        id: transcoder-manager
+      containers:
+        - name: transcoder-manager
+          image: eu.gcr.io/steady-cat-112112/transcoder-manager:latest
+          ports:
+            - containerPort: 80
+          limits:
+            memory: "100MB"
+            cpu: "100m"
+    metadata:
+      labels:
+        app: transcoder-manager

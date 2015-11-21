@@ -1,0 +1,48 @@
+{
+  "apiVersion": "v1",
+  "kind": "ReplicationController",
+  "metadata": {
+    "name": "transcoder",
+    "labels": {
+      "app": "transcoder",
+      "channel": null,
+      "format": null      
+    },
+    "namespace": ""
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "app": "transcoder",
+      "channel": null,
+      "format": null
+    },
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "transcoder",
+          "channel": null,
+          "format": null
+        }
+      },
+      "spec": {
+        "volumes": null,
+        "containers": [
+          {
+            "name": "transcoder",
+            "image": "eu.gcr.io/steady-cat-112112/transcoder:latest",
+            "command": [
+
+            ],
+            "ports": [
+            ],
+            "limits": {
+              "memory": "200M",
+              "cpu": "100m"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -3,7 +3,7 @@ log = require("log4js").getLogger "Requestor"
 
 class Requestor
 	constructor: (options) ->
-		{ @apiPrefix, @version, @namespace, @token, @host } = options if options?
+		{ @apiPrefix, @version, @namespace, @token, @host, @certificate } = options if options?
 
 		@apiPrefix ?= "api"
 		@version ?= "v1"
@@ -20,7 +20,8 @@ class Requestor
 			body: body
 			auth: bearer: @token
 			qs: queryParameters
-			strictSSL: false
+			#strictSSL: false
+			agentOptions: ca: @certificate
 
 		log.debug "doRequest request options: #{JSON.stringify(options)}"
 

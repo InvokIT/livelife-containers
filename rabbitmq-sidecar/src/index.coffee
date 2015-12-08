@@ -1,11 +1,16 @@
 k8s = require("ll-k8s")()
 request = require "request"
 path = require "path"
+dns = require "dns"
+os = require "os"
+promisify = require "node-promisify"
 log = require("log4js").getLogger "index"
 _ = require "lodash"
+rabbitmqctl = new (require "./rabbitmqctl") node: "rabbit@#{os.hostname()}"
 
 # What does this sidecar do?
 # At bootup:
+#	* Join the cluster
 # 	* Set queue policies for high-availability
 # then every <INTERVAL> seconds:
 #	* Get a list of pods running rabbitmq
@@ -16,10 +21,16 @@ WORKER_INTERVAL = process.env.WORKER_INTERVAL or 30
 POD_LABELSELECTOR = process.env.POD_LABELSELECTOR or "app=rabbitmq"
 RABBIT_MANAGEMENT_URL = process.env.RABBIT_MANAGEMENT_URL || "http://localhost:15672/api/"
 
-getAddressOfPods = (cb) ->
+getAddressOfPods = ->
 	k8s("pods").find(POD_LABELSELECTOR)
 	.then (result) ->
-		_.chain(result.items).map((p) -> p.metadata?.status?.podIP).filter((a) -> a?)
+		_.chain result.items
+		.filter (p) -> p.metadata?.status?.podIP?
+		.map (p) -> p.metadata.status.podIP
+		.value()
+
+getOwnAddress = ->
+	promisify(dns.lookup) os.hostname()
 
 setHaPolicy = ->
 	defaultVHost = "%2f"
@@ -50,7 +61,9 @@ setHaPolicy = ->
 				resolve body
 
 ensurePodInCluster = (pods) ->
-	Promise.resolve()
+	getOwnAddress.then (thisPod) ->
+		clusterStatus = rabbitmqctl.cluster_status()
+
 
 removeDeadPodsInCluster = (pods) ->
 	Promise.resolve()
@@ -63,7 +76,6 @@ worker = ->
 	.then (pods) ->
 		logs.debug "RabbitMQ pod addresses: #{JSON.stringify(pods)}"
 		Promise.all [
-			setHaPolicy()
 			ensurePodInCluster(pods)
 			removeDeadPodsInCluster(pods)
 		]
@@ -72,4 +84,7 @@ worker = ->
 
 module.exports =
 	start: ->
-		setImmediate worker
+		rabbitmqctl.wait() # Waits synchronously for RabbitMQ to boot
+
+		joinCluster()
+		setHaPolicy().then -> setImmediate worker

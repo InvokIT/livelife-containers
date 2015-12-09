@@ -1,6 +1,5 @@
 amqp = require "amqplib"
 log = require("log4js").getLogger "AMQ"
-_ = require "lodash"
 
 PUBSUB_EXCHANGE_NAME = "PubSub Exchange"
 
@@ -8,15 +7,15 @@ PUBSUB_EXCHANGE_OPTIONS =
 	durable: false
 	autoDelete: false
 
+PUBSUB_EXCHANGE_TYPE = "topic"
+
 PUBSUB_QUEUE_OPTIONS =
 	exclusive: true
 	durable: false
 	autoDelete: true
 
 class AMQ
-	constructor: (@url, options) ->
-		{@queueOptions} = options
-		_.defaults @queueOptions, DEFAULT_QUEUE_OPTIONS
+	constructor: (@url) ->
 
 	publish: (key, message) ->
 		if not key? then return Promise.reject new Error "No key defined."
@@ -24,8 +23,10 @@ class AMQ
 
 		return @_getChannel()
 		.then (channel) ->
-			channel.assertExchange PUBSUB_EXCHANGE_NAME, "direct", PUBSUB_EXCHANGE_OPTIONS
+			channel.assertExchange PUBSUB_EXCHANGE_NAME, PUBSUB_EXCHANGE_TYPE, PUBSUB_EXCHANGE_OPTIONS
+
 			channel.publish PUBSUB_EXCHANGE_NAME, key, @_createMessageBuffer message
+
 			log.debug "publish(#{key}, #{message}): Message sent succesfully."
 		.catch (err) ->
 			log.error "publish(#{key}, #{message})", err
@@ -66,7 +67,7 @@ class AMQ
 						log.warn "subscribe(#{keys}): Error in messageHandler", err
 						throw err
 
-			ch.assertExchange PUBSUB_EXCHANGE_NAME, "direct", PUBSUB_EXCHANGE_OPTIONS
+			ch.assertExchange PUBSUB_EXCHANGE_NAME, PUBSUB_EXCHANGE_TYPE, PUBSUB_EXCHANGE_OPTIONS
 
 			ch.assertQueue "", PUBSUB_QUEUE_OPTIONS
 			.then (r) =>
@@ -78,6 +79,7 @@ class AMQ
 				.then (r) =>
 					subscriptionToken.cancel = -> ch.cancel r.consumerTag
 					return subscriptionToken
+
 		.catch (err) ->
 			log.error "subscribe(#{exchangeName}, fn)", err
 

@@ -1,5 +1,6 @@
 amqp = require "amqplib"
 log = require("log4js").getLogger "AMQ"
+assert = require "assert"
 
 PUBSUB_EXCHANGE_NAME = "PubSub Exchange"
 
@@ -22,12 +23,12 @@ class AMQ
 		if not message? then return Promise.reject new Error "No message defined."
 
 		return @_getChannel()
-		.then (channel) ->
+		.then (channel) =>
 			channel.assertExchange PUBSUB_EXCHANGE_NAME, PUBSUB_EXCHANGE_TYPE, PUBSUB_EXCHANGE_OPTIONS
 
 			channel.publish PUBSUB_EXCHANGE_NAME, key, @_createMessageBuffer message
 
-			log.debug "publish(#{key}, #{message}): Message sent succesfully."
+			log.info "publish(#{key}, #{message}): Message sent succesfully."
 		.catch (err) ->
 			log.error "publish(#{key}, #{message})", err
 
@@ -36,6 +37,8 @@ class AMQ
 		if not messageHandler? then return Promise.reject new Error "No messageHandler defined."		
 
 		keys = [keys] if not Array.isArray keys
+
+		assert Array.isArray keys
 
 		return @_getChannel()
 		.then (ch) =>
@@ -59,11 +62,13 @@ class AMQ
 						if p?.then?
 							p.then -> ch.ack(msg)
 							p.catch (err) ->
+								ch.nack msg
 								log.warn "subscribe(#{keys}): Error in messageHandler", err
 						else
 							ch.ack(msg)
 					catch err
 						# Something happened, don't ack
+						ch.nack msg
 						log.warn "subscribe(#{keys}): Error in messageHandler", err
 						throw err
 
@@ -77,19 +82,28 @@ class AMQ
 
 				return ch.consume queueName, onMessage, exclusive: true, noAck: false
 				.then (r) =>
-					subscriptionToken.cancel = -> ch.cancel r.consumerTag
+					log.info "subscribe(#{keys}): #{r.consumerTag} succesfully subscribed."
+
+					subscriptionToken.cancel = -> 
+						log.info "#{r.consumerTag} subscription cancelled."
+						return ch.cancel r.consumerTag
+
 					return subscriptionToken
 
 		.catch (err) ->
-			log.error "subscribe(#{exchangeName}, fn)", err
+			log.error "subscribe(#{keys}, fn)", err
 
-	_resubscribe: (exchangeName, messageHandler, subscriptionToken) ->
-		@subscribe exchangeName, messageHandler, subscriptionToken
-		.then -> log.warn "Resubscribed to exchange '#{exchangeName}'."
+	close: ->
+		@_connection?.then (c) -> c.close()
+		return
+
+	_resubscribe: (keys, messageHandler, subscriptionToken) ->
+		@subscribe keys, messageHandler, subscriptionToken
+		.then -> log.warn "Resubscribed to keys '#{keys}'."
 		.catch (err) =>
-			log.warn "Resubscription to exchange '#{exchangeName}' failed. Retrying..."
-			timeoutToken = setTimeout (=> @_resubscribe exchangeName, messageHandler, subscriptionToken), 500
-			subscriptionToken.cancel = -> clearTimeout timeoutToken
+			log.warn "Resubscription to keys '#{keys}' failed. Retrying..."
+			timeoutToken = setTimeout (=> @_resubscribe keys, messageHandler, subscriptionToken), 500
+			subscriptionToken.cancel = -> clearTimeout timeoutToken; return Promise.resolve()
 
 	_createMessageBuffer: (msgData) -> new Buffer JSON.stringify(msgData)
 
@@ -102,8 +116,6 @@ class AMQ
 		.then (c) =>
 			log.info "Connected to #{amqpUrl}"
 
-			@_connection = c
-
 			c.on "close", @_onConnectionClose.bind @
 			c.on "error", @_onConnectionError.bind @
 			c.on "blocked", @_onConnectionBlocked.bind @
@@ -113,18 +125,32 @@ class AMQ
 		.catch (err) ->
 			log.error "Unable to connect to #{amqpUrl}", err
 
-	_getConnection: ->
-		if @_connection? then Promise.resolve @_connection else @_createConnection()
-
-	_getChannel: ->
+	_createChannel: ->
 		return @_getConnection()
 		.then (c) -> c.createChannel()
-		.then (ch) ->
+		.then (ch) =>
+			log.debug "Created channel."
+
 			ch.on "close", @_onChannelClose.bind @
 			ch.on "error", @_onChannelError.bind @
 			ch.on "return", @_onChannelReturn.bind @
 			ch.on "drain", @_onChannelDrain.bind @
 			return ch
+
+	_getConnection: ->
+		log.trace "_getConnection"
+		if @_connection? then @_connection
+		else @_connection = @_createConnection()
+
+	_getChannel: ->
+		log.trace "_getChannel"
+
+		if @_channel?
+			log.debug "Reusing channel."
+			return @_channel
+		else
+			log.debug "Creating new channel"
+			return @_channel = @_createChannel()
 
 	_onConnectionClose: ->
 		log.info "Connection closed."
@@ -142,9 +168,11 @@ class AMQ
 
 	_onChannelClose: ->
 		log.debug "Channel closed."
+		@_channel = null
 
 	_onChannelError: (error) ->
 		log.error "Channel error.", error
+		@_channel = null
 
 	_onChannelReturn: (msg) ->
 		log.warn "A message was returned to sender: #{msg}"

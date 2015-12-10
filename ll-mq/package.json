@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "amqplib": "^0.4.0",
-    "log4js": "^0.6.27",
+    "log4js": "^0.6.27"
   },
   "publishConfig": {
     "registry": "http://localhost:4873/"
